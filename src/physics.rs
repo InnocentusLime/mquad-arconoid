@@ -22,11 +22,27 @@ pub struct Physics {
 
 impl Physics {
     pub fn new() -> Self {
+        let mut boxes = [true; BOX_PER_LINE * BOX_LINE_COUNT];
+
+        for y in 0..BOX_LINE_COUNT {
+            boxes[Self::box_id(4, y)] = false;
+            boxes[Self::box_id(5, y)] = false;
+            boxes[Self::box_id(6, y)] = false;
+            boxes[Self::box_id(7, y)] = false;
+            boxes[Self::box_id(8, y)] = false;
+            boxes[Self::box_id(9, y)] = false;
+            boxes[Self::box_id(10, y)] = false;
+            boxes[Self::box_id(11, y)] = false;
+            boxes[Self::box_id(12, y)] = false;
+            boxes[Self::box_id(13, y)] = false;
+            boxes[Self::box_id(14, y)] = false;
+        }
+
         Self {
             player_x: 0.0,
-            ball_pos: vec2(30.0, 200.0),
-            ball_dir: -vec2(1.0, -1.0),
-            boxes: [true; BOX_PER_LINE * BOX_LINE_COUNT],
+            ball_pos: vec2(30.0, 180.0),
+            ball_dir: -vec2(1.0, 1.0),
+            boxes,
         }
     }
 
@@ -65,14 +81,34 @@ impl Physics {
 
         for by in 0..BOX_LINE_COUNT {
             for bx in 0..BOX_PER_LINE {
+                let box_rect = Self::box_rect(bx, by);
+
                 if !self.boxes[Self::box_id(bx, by)] {
                     continue;
                 }
 
-                let box_rect = Self::box_rect(bx, by);
+                if !Self::ball_in_rect(new_ball_pos, box_rect) {
+                    continue;
+                }
 
-                if Self::ball_in_rect(new_ball_pos, box_rect) {
-                    self.boxes[Self::box_id(bx, by)] = false;
+                self.boxes[Self::box_id(bx, by)] = false;
+
+                if self.ball_pos.x + BALL_RADIUS >= box_rect.left() &&
+                    self.ball_pos.x - BALL_RADIUS <= box_rect.right()
+                {
+                    self.ball_dir.y *= -1.0;
+                    if self.ball_pos.y > box_rect.bottom() {
+                        new_ball_pos.y = box_rect.bottom() + BALL_RADIUS + PUSH_EPSILON;
+                    } else {
+                        new_ball_pos.y = box_rect.top() - BALL_RADIUS - PUSH_EPSILON;
+                    }
+                } else {
+                    self.ball_dir.x *= -1.0;
+                    if self.ball_pos.x > box_rect.right() {
+                        new_ball_pos.x = box_rect.right() + BALL_RADIUS + PUSH_EPSILON;
+                    } else {
+                        new_ball_pos.x = box_rect.left() - BALL_RADIUS - PUSH_EPSILON;
+                    }
                 }
             }
         }
