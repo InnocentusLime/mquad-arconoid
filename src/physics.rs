@@ -1,5 +1,7 @@
 use macroquad::prelude::*;
 
+const PUSH_EPSILON: f32 = 0.001;
+const PLAYER_SPEED: f32 = 160.0;
 const BALL_SPEED: f32 = 120.0;
 const BOX_PER_LINE: usize = 30;
 const BOX_LINE_COUNT: usize = 13;
@@ -28,9 +30,18 @@ impl Physics {
         }
     }
 
+    pub fn move_player(&mut self, dt: f32, right: bool) {
+        let mut dx = PLAYER_SPEED * dt;
+        if !right { dx *= -1.0; }
+
+        self.player_x += dx;
+    }
+
     pub fn update(&mut self, dt: f32) {
         let offset = self.ball_dir * BALL_SPEED * dt;
         let mut new_ball_pos = self.ball_pos + offset;
+
+        self.player_x = self.player_x.clamp(0.0, MAX_X - PLAYER_WIDTH);
 
         if new_ball_pos.x - BALL_RADIUS < 0.0 {
             self.ball_dir.x *= -1.0;
@@ -50,6 +61,26 @@ impl Physics {
         if new_ball_pos.y + BALL_RADIUS > MAX_Y {
             self.ball_dir.y *= -1.0;
             new_ball_pos.y = MAX_Y - BALL_RADIUS;
+        }
+
+        for by in 0..BOX_LINE_COUNT {
+            for bx in 0..BOX_PER_LINE {
+                if !self.boxes[Self::box_id(bx, by)] {
+                    continue;
+                }
+
+                let box_rect = Self::box_rect(bx, by);
+
+                if Self::ball_in_rect(new_ball_pos, box_rect) {
+                    self.boxes[Self::box_id(bx, by)] = false;
+                }
+            }
+        }
+
+        let player_rect = self.player_rect();
+        if Self::ball_in_rect(self.ball_pos, player_rect) {
+            self.ball_dir.y *= -1.0;
+            new_ball_pos.y = player_rect.y - BALL_RADIUS - PUSH_EPSILON;
         }
 
         self.ball_pos = new_ball_pos;
@@ -82,15 +113,33 @@ impl Physics {
             }
         }
 
+        let rect = self.player_rect();
+
         draw_rectangle(
-            self.player_x,
-            MAX_Y - PLAYER_HEIGHT,
-            PLAYER_WIDTH,
-            PLAYER_HEIGHT,
+            rect.x,
+            rect.y,
+            rect.w,
+            rect.h,
             YELLOW
         );
 
         draw_circle(self.ball_pos.x, self.ball_pos.y, BALL_RADIUS, YELLOW);
+    }
+
+    fn player_rect(&self) -> Rect {
+        Rect {
+            x: self.player_x,
+            y: MAX_Y - PLAYER_HEIGHT,
+            w: PLAYER_WIDTH,
+            h: PLAYER_HEIGHT,
+        }
+    }
+
+    fn ball_in_rect(pos: Vec2, rect: Rect) -> bool {
+        pos.x + BALL_RADIUS >= rect.left() &&
+        pos.x - BALL_RADIUS <= rect.right() &&
+        pos.y + BALL_RADIUS >= rect.top() &&
+        pos.y - BALL_RADIUS <= rect.bottom()
     }
 
     fn box_rect(x: usize, y: usize) -> Rect {
