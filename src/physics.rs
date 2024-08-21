@@ -1,17 +1,17 @@
 use macroquad::prelude::*;
 
-const PUSH_EPSILON: f32 = 0.001;
-const PLAYER_SPEED: f32 = 170.0;
-const BALL_SPEED: f32 = 180.0;
-const BOX_PER_LINE: usize = 30;
-const BOX_LINE_COUNT: usize = 13;
-const BOX_WIDTH: f32 = 20.0;
-const BOX_HEIGHT: f32 = 10.0;
-const BALL_RADIUS: f32 = 6.0;
-const MAX_X: f32 = BOX_WIDTH * (BOX_PER_LINE as f32);
-const MAX_Y: f32 = 410.0;
-const PLAYER_WIDTH: f32 = 80.0;
-const PLAYER_HEIGHT: f32 = 10.0;
+pub const PUSH_EPSILON: f32 = 0.001;
+pub const PLAYER_SPEED: f32 = 170.0;
+pub const BALL_SPEED: f32 = 180.0;
+pub const BOX_PER_LINE: usize = 30;
+pub const BOX_LINE_COUNT: usize = 13;
+pub const BOX_WIDTH: f32 = 20.0;
+pub const BOX_HEIGHT: f32 = 10.0;
+pub const BALL_RADIUS: f32 = 6.0;
+pub const MAX_X: f32 = BOX_WIDTH * (BOX_PER_LINE as f32);
+pub const MAX_Y: f32 = 410.0;
+pub const PLAYER_WIDTH: f32 = 80.0;
+pub const PLAYER_HEIGHT: f32 = 10.0;
 
 pub struct Physics {
     pub player_x: f32,
@@ -123,53 +123,26 @@ impl Physics {
         false
     }
 
-    pub fn draw(&self) {
-        for by in 0..BOX_LINE_COUNT {
-            for bx in 0..BOX_PER_LINE {
-                if !self.boxes[Self::box_id(bx, by)] {
-                    continue;
-                }
-
-                let box_rect = Self::box_rect(bx, by);
-
-                draw_rectangle(
-                    box_rect.x,
-                    box_rect.y,
-                    box_rect.w,
-                    box_rect.h,
-                    BLUE
-                );
-                draw_rectangle_lines(
-                    box_rect.x,
-                    box_rect.y,
-                    box_rect.w,
-                    box_rect.h,
-                    1.0,
-                    BLACK,
-                );
-            }
-        }
-
-        let rect = self.player_rect();
-
-        draw_rectangle(
-            rect.x,
-            rect.y,
-            rect.w,
-            rect.h,
-            YELLOW
-        );
-
-        draw_circle(self.ball_pos.x, self.ball_pos.y, BALL_RADIUS, YELLOW);
-    }
-
-    fn player_rect(&self) -> Rect {
+    pub fn player_rect(&self) -> Rect {
         Rect {
             x: self.player_x,
             y: MAX_Y - PLAYER_HEIGHT,
             w: PLAYER_WIDTH,
             h: PLAYER_HEIGHT,
         }
+    }
+
+    pub fn box_rect(x: usize, y: usize) -> Rect {
+        Rect {
+            x: (x as f32) * BOX_WIDTH,
+            y: (y as f32) * BOX_HEIGHT,
+            w: BOX_WIDTH,
+            h: BOX_HEIGHT,
+        }
+    }
+
+    pub fn box_id(x: usize, y: usize) -> usize {
+        x + y * BOX_PER_LINE
     }
 
     fn ball_bumped_vertically(pos: Vec2, rect: Rect) -> bool {
@@ -182,18 +155,5 @@ impl Physics {
         pos.x - BALL_RADIUS <= rect.right() &&
         pos.y + BALL_RADIUS >= rect.top() &&
         pos.y - BALL_RADIUS <= rect.bottom()
-    }
-
-    fn box_rect(x: usize, y: usize) -> Rect {
-        Rect {
-            x: (x as f32) * BOX_WIDTH,
-            y: (y as f32) * BOX_HEIGHT,
-            w: BOX_WIDTH,
-            h: BOX_HEIGHT,
-        }
-    }
-
-    fn box_id(x: usize, y: usize) -> usize {
-        x + y * BOX_PER_LINE
     }
 }

@@ -1,7 +1,9 @@
 use macroquad::prelude::*;
 use physics::Physics;
+use render::Render;
 
 mod physics;
+mod render;
 
 fn window_conf() -> Conf {
     Conf {
@@ -21,6 +23,7 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut phys = Physics::new();
+    let mut render = Render::new();
 
     loop {
         clear_background(RED);
@@ -39,7 +42,7 @@ async fn main() {
             break;
         }
 
-        phys.draw();
+        render.draw(&phys);
 
         next_frame().await
     }
