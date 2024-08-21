@@ -3,7 +3,22 @@ use physics::Physics;
 
 mod physics;
 
-#[macroquad::main("BasicShapes")]
+fn window_conf() -> Conf {
+    Conf {
+        window_title: "Funny Arcanoid".to_owned(),
+        high_dpi: true,
+        window_width: 1920,
+        window_height: 1080,
+        fullscreen: false,
+        platform: miniquad::conf::Platform {
+            linux_backend: miniquad::conf::LinuxBackend::WaylandOnly,
+            ..Default::default()
+        },
+        ..Default::default()
+    }
+}
+
+#[macroquad::main(window_conf)]
 async fn main() {
     let mut phys = Physics::new();
 
