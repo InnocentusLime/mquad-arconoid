@@ -1,8 +1,8 @@
 use macroquad::prelude::*;
 
 const PUSH_EPSILON: f32 = 0.001;
-const PLAYER_SPEED: f32 = 160.0;
-const BALL_SPEED: f32 = 120.0;
+const PLAYER_SPEED: f32 = 170.0;
+const BALL_SPEED: f32 = 180.0;
 const BOX_PER_LINE: usize = 30;
 const BOX_LINE_COUNT: usize = 13;
 const BOX_WIDTH: f32 = 20.0;
