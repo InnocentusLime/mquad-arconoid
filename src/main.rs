@@ -23,10 +23,12 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut phys = Physics::new();
-    let mut render = Render::new();
+    let mut render = Render::new().await;
 
+    let mut t = 0.0;
     loop {
         let dt = get_frame_time();
+        t += dt;
 
         if is_key_down(KeyCode::A) {
             phys.move_player(dt, false);
@@ -37,10 +39,10 @@ async fn main() {
 
         let hit_floor = phys.update(get_frame_time());
         if hit_floor {
-            break;
+            // break;
         }
 
-        render.draw(&phys);
+        render.draw(&phys, t);
 
         next_frame().await
     }
