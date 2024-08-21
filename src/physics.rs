@@ -14,10 +14,10 @@ const PLAYER_WIDTH: f32 = 80.0;
 const PLAYER_HEIGHT: f32 = 10.0;
 
 pub struct Physics {
-    player_x: f32,
-    ball_pos: Vec2,
-    ball_dir: Vec2,
-    boxes: [bool; BOX_PER_LINE * BOX_LINE_COUNT],
+    pub player_x: f32,
+    pub ball_pos: Vec2,
+    pub ball_dir: Vec2,
+    pub boxes: [bool; BOX_PER_LINE * BOX_LINE_COUNT],
 }
 
 impl Physics {
