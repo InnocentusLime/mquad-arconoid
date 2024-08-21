@@ -26,8 +26,6 @@ async fn main() {
     let mut render = Render::new();
 
     loop {
-        clear_background(RED);
-
         let dt = get_frame_time();
 
         if is_key_down(KeyCode::A) {

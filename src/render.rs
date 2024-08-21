@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 
-use crate::physics::{self, Physics};
+use crate::physics::{self, Physics, MAX_X, MAX_Y};
 
 
 
@@ -16,6 +16,14 @@ impl Render {
     }
 
     pub fn draw(&mut self, phys: &Physics) {
+        clear_background(BLACK);
+
+        draw_rectangle(
+            0.0, 0.0,
+            MAX_X, MAX_Y,
+            DARKBLUE
+        );
+
         let view_width = (screen_width() / screen_height()) * physics::MAX_Y;
         let mut cam = Camera2D::from_display_rect(Rect {
             x: -(view_width - physics::MAX_X) / 2.0,
