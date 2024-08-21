@@ -41,7 +41,7 @@ impl Physics {
         Self {
             player_x: 0.0,
             ball_pos: vec2(30.0, 180.0),
-            ball_dir: -vec2(1.0, 1.0),
+            ball_dir: vec2(-1.0, -1.0).normalize(),
             boxes,
         }
     }
