@@ -19,7 +19,11 @@ async fn main() {
             phys.move_player(dt, true);
         }
 
-        phys.update(get_frame_time());
+        let hit_floor = phys.update(get_frame_time());
+        if hit_floor {
+            break;
+        }
+
         phys.draw();
 
         next_frame().await

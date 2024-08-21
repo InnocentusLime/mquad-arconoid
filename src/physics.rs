@@ -53,7 +53,7 @@ impl Physics {
         self.player_x += dx;
     }
 
-    pub fn update(&mut self, dt: f32) {
+    pub fn update(&mut self, dt: f32) -> bool {
         let offset = self.ball_dir * BALL_SPEED * dt;
         let mut new_ball_pos = self.ball_pos + offset;
 
@@ -77,6 +77,7 @@ impl Physics {
         if new_ball_pos.y + BALL_RADIUS > MAX_Y {
             self.ball_dir.y *= -1.0;
             new_ball_pos.y = MAX_Y - BALL_RADIUS;
+            return true;
         }
 
         for by in 0..BOX_LINE_COUNT {
@@ -93,9 +94,7 @@ impl Physics {
 
                 self.boxes[Self::box_id(bx, by)] = false;
 
-                if self.ball_pos.x + BALL_RADIUS >= box_rect.left() &&
-                    self.ball_pos.x - BALL_RADIUS <= box_rect.right()
-                {
+                if Self::ball_bumped_vertically(self.ball_pos, box_rect) {
                     self.ball_dir.y *= -1.0;
                     if self.ball_pos.y > box_rect.bottom() {
                         new_ball_pos.y = box_rect.bottom() + BALL_RADIUS + PUSH_EPSILON;
@@ -120,6 +119,8 @@ impl Physics {
         }
 
         self.ball_pos = new_ball_pos;
+
+        false
     }
 
     pub fn draw(&self) {
@@ -169,6 +170,11 @@ impl Physics {
             w: PLAYER_WIDTH,
             h: PLAYER_HEIGHT,
         }
+    }
+
+    fn ball_bumped_vertically(pos: Vec2, rect: Rect) -> bool {
+        pos.x + BALL_RADIUS >= rect.left() &&
+            pos.x - BALL_RADIUS <= rect.right()
     }
 
     fn ball_in_rect(pos: Vec2, rect: Rect) -> bool {
