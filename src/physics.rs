@@ -3,10 +3,10 @@ use macroquad::prelude::*;
 pub const PUSH_EPSILON: f32 = 0.001;
 pub const PLAYER_SPEED: f32 = 170.0;
 pub const BALL_SPEED: f32 = 180.0;
-pub const BOX_PER_LINE: usize = 30;
-pub const BOX_LINE_COUNT: usize = 13;
-pub const BOX_WIDTH: f32 = 20.0;
-pub const BOX_HEIGHT: f32 = 10.0;
+pub const BOX_PER_LINE: usize = 15;
+pub const BOX_LINE_COUNT: usize = 7;
+pub const BOX_WIDTH: f32 = 40.0;
+pub const BOX_HEIGHT: f32 = 20.0;
 pub const BALL_RADIUS: f32 = 6.0;
 pub const MAX_X: f32 = BOX_WIDTH * (BOX_PER_LINE as f32);
 pub const MAX_Y: f32 = 410.0;
@@ -22,27 +22,11 @@ pub struct Physics {
 
 impl Physics {
     pub fn new() -> Self {
-        let mut boxes = [true; BOX_PER_LINE * BOX_LINE_COUNT];
-
-        for y in 0..BOX_LINE_COUNT {
-            boxes[Self::box_id(4, y)] = false;
-            boxes[Self::box_id(5, y)] = false;
-            boxes[Self::box_id(6, y)] = false;
-            boxes[Self::box_id(7, y)] = false;
-            boxes[Self::box_id(8, y)] = false;
-            boxes[Self::box_id(9, y)] = false;
-            boxes[Self::box_id(10, y)] = false;
-            boxes[Self::box_id(11, y)] = false;
-            boxes[Self::box_id(12, y)] = false;
-            boxes[Self::box_id(13, y)] = false;
-            boxes[Self::box_id(14, y)] = false;
-        }
-
         Self {
             player_x: 0.0,
             ball_pos: vec2(30.0, 180.0),
             ball_dir: vec2(-1.0, -1.0).normalize(),
-            boxes,
+            boxes: [true; BOX_PER_LINE * BOX_LINE_COUNT],
         }
     }
 
@@ -126,7 +110,7 @@ impl Physics {
     pub fn player_rect(&self) -> Rect {
         Rect {
             x: self.player_x,
-            y: MAX_Y - PLAYER_HEIGHT,
+            y: MAX_Y - PLAYER_HEIGHT - BALL_RADIUS * 1.9,
             w: PLAYER_WIDTH,
             h: PLAYER_HEIGHT,
         }
