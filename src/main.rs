@@ -5,6 +5,13 @@ use render::Render;
 mod physics;
 mod render;
 
+#[derive(Clone, Copy, Debug)]
+enum GameState {
+    Start,
+    Active,
+    GameOver,
+}
+
 fn window_conf() -> Conf {
     Conf {
         window_title: "Funny Arcanoid".to_owned(),
@@ -24,38 +31,53 @@ fn window_conf() -> Conf {
 async fn main() {
     let mut phys = Physics::new();
     let mut render = Render::new().await;
-    let mut broken = Vec::with_capacity(3);
-
     let mut t = 0.0;
+    let mut state = GameState::Start;
+
     loop {
+        let mut broken = None;
         let dt = get_frame_time();
         t += dt;
 
-        if is_key_down(KeyCode::A) {
-            phys.move_player(dt, false);
-        }
-        if is_key_down(KeyCode::D) {
-            phys.move_player(dt, true);
-        }
-
-        broken.clear();
-
-        let old_blocks = phys.boxes;
-        let hit_floor = phys.update(get_frame_time());
-        for by in 0..physics::BOX_LINE_COUNT {
-            for bx in 0..physics::BOX_PER_LINE {
-                if old_blocks[by][bx] == phys.boxes[by][bx] {
-                    continue;
+        match state {
+            GameState::Start => {
+                if is_key_pressed(KeyCode::Space) {
+                    state = GameState::Active;
                 }
-                broken.push((bx, by));
-            }
-        }
+            },
+            GameState::Active => {
+                if is_key_down(KeyCode::A) {
+                    phys.move_player(dt, false);
+                }
+                if is_key_down(KeyCode::D) {
+                    phys.move_player(dt, true);
+                }
 
-        if hit_floor {
-            // break;
-        }
+                let old_blocks = phys.boxes;
+                let hit_floor = phys.update(get_frame_time());
+                for by in 0..physics::BOX_LINE_COUNT {
+                    for bx in 0..physics::BOX_PER_LINE {
+                        if old_blocks[by][bx] == phys.boxes[by][bx] {
+                            continue;
+                        }
+                        broken = Some((bx, by));
+                    }
+                }
 
-        render.draw(&phys, t, &broken);
+                if hit_floor {
+                    state = GameState::GameOver
+                }
+            },
+            GameState::GameOver => {
+                if is_key_pressed(KeyCode::Space) {
+                    phys = Physics::new();
+                    state = GameState::Active;
+                }
+
+            },
+        };
+
+        render.draw(state, &phys, t, broken.into_iter());
 
         next_frame().await
     }

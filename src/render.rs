@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 
-use crate::physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH};
+use crate::{physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH}, GameState};
 use macroquad_particles::{self as particles, AtlasConfig, BlendMode, ColorCurve, EmitterConfig};
 
 fn trail() -> particles::EmitterConfig {
@@ -98,13 +98,23 @@ impl Render {
         }
     }
 
-    pub fn draw(&mut self, phys: &Physics, t: f32, broken: &Vec<(usize, usize)>) {
+    pub fn draw(
+        &mut self,
+        state: GameState,
+        phys: &Physics,
+        t: f32,
+        mut broken: impl Iterator<Item = (usize, usize)>,
+    ) {
         clear_background(Color {
             r: 0.0,
             g: 0.0,
             b: 0.12,
             a: 1.0,
         });
+
+        if matches!(state, GameState::Start) {
+            return;
+        }
 
         let view_width = (screen_width() / screen_height()) * physics::MAX_Y;
         let mut cam = Camera2D::from_display_rect(Rect {
@@ -191,36 +201,38 @@ impl Render {
             },
         );
 
-        if let Some((bx, by)) = broken.last() {
+        if let Some((bx, by)) = broken.next() {
             self.brick_emit.config.emitting = true;
             self.last_emit = vec2(
-                BOX_WIDTH * (*bx as f32 + 0.5),
-                BOX_HEIGHT * (*by as f32 + 0.6),
+                BOX_WIDTH * (bx as f32 + 0.5),
+                BOX_HEIGHT * (by as f32 + 0.6),
             );
         }
         self.brick_emit.draw(self.last_emit);
 
-        let tex = [&self.ball1, &self.ball2, &self.ball3];
-        let tex = tex[(t * 5.0) as usize % 3];
-        draw_texture_ex(
-            tex,
-            phys.ball_pos.x - BALL_RADIUS,
-            phys.ball_pos.y - BALL_RADIUS,
-            WHITE,
-            DrawTextureParams {
-                dest_size: Some(2.0 * vec2(
-                    physics::BALL_RADIUS,
-                    physics::BALL_RADIUS
-                )),
-                source: None,
-                rotation: 0.0,
-                flip_x: false,
-                flip_y: false,
-                pivot: None,
-            },
-        );
-        self.ball_emit.config.initial_direction = -phys.ball_dir;
-        self.ball_emit.config.gravity = phys.ball_dir;
-        self.ball_emit.draw(phys.ball_pos);
+        if matches!(state, GameState::Active) {
+            let tex = [&self.ball1, &self.ball2, &self.ball3];
+            let tex = tex[(t * 5.0) as usize % 3];
+            draw_texture_ex(
+                tex,
+                phys.ball_pos.x - BALL_RADIUS,
+                phys.ball_pos.y - BALL_RADIUS,
+                WHITE,
+                DrawTextureParams {
+                    dest_size: Some(2.0 * vec2(
+                        physics::BALL_RADIUS,
+                        physics::BALL_RADIUS
+                    )),
+                    source: None,
+                    rotation: 0.0,
+                    flip_x: false,
+                    flip_y: false,
+                    pivot: None,
+                },
+            );
+            self.ball_emit.config.initial_direction = -phys.ball_dir;
+            self.ball_emit.config.gravity = phys.ball_dir;
+            self.ball_emit.draw(phys.ball_pos);
+        }
     }
 }
