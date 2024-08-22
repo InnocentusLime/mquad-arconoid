@@ -5,3 +5,8 @@ edition = "2021"
 
 [dependencies]
 macroquad = "0.4.12"
+macroquad-particles = "0.2.1"
+
+[patch.crates-io]
+macroquad-particles = { git = "https://github.com/not-fl3/macroquad.git" }
+macroquad = { git = "https://github.com/not-fl3/macroquad.git" }

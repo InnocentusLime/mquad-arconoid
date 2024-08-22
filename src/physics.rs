@@ -17,7 +17,7 @@ pub struct Physics {
     pub player_x: f32,
     pub ball_pos: Vec2,
     pub ball_dir: Vec2,
-    pub boxes: [bool; BOX_PER_LINE * BOX_LINE_COUNT],
+    pub boxes: [[bool; BOX_PER_LINE]; BOX_LINE_COUNT],
 }
 
 impl Physics {
@@ -26,7 +26,7 @@ impl Physics {
             player_x: 0.0,
             ball_pos: vec2(30.0, 180.0),
             ball_dir: vec2(-1.0, -1.0).normalize(),
-            boxes: [true; BOX_PER_LINE * BOX_LINE_COUNT],
+            boxes: [[true; BOX_PER_LINE]; BOX_LINE_COUNT],
         }
     }
 
@@ -68,7 +68,7 @@ impl Physics {
             for bx in 0..BOX_PER_LINE {
                 let box_rect = Self::box_rect(bx, by);
 
-                if !self.boxes[Self::box_id(bx, by)] {
+                if !self.boxes[by][bx] {
                     continue;
                 }
 
@@ -76,7 +76,7 @@ impl Physics {
                     continue;
                 }
 
-                self.boxes[Self::box_id(bx, by)] = false;
+                self.boxes[by][bx] = false;
 
                 if Self::ball_bumped_vertically(self.ball_pos, box_rect) {
                     self.ball_dir.y *= -1.0;
@@ -123,10 +123,6 @@ impl Physics {
             w: BOX_WIDTH,
             h: BOX_HEIGHT,
         }
-    }
-
-    pub fn box_id(x: usize, y: usize) -> usize {
-        x + y * BOX_PER_LINE
     }
 
     fn ball_bumped_vertically(pos: Vec2, rect: Rect) -> bool {

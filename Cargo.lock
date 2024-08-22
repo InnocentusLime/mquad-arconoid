@@ -137,8 +137,7 @@ checksum = "d8adc4bb1803a324070e64a98ae98f38934d91957a99cfb3a43dcbc01bc56439"
 [[package]]
 name = "macroquad"
 version = "0.4.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7db34475fdc8d1ce7f601c8ed532f44edbc5a7c6e12e822c4d86d68756e6b3fc"
+source = "git+https://github.com/not-fl3/macroquad.git#f77e656c811d51140f27da778917cf368c881605"
 dependencies = [
  "fontdue",
  "glam",
@@ -150,10 +149,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "macroquad-particles"
+version = "0.2.1"
+source = "git+https://github.com/not-fl3/macroquad.git#f77e656c811d51140f27da778917cf368c881605"
+dependencies = [
+ "macroquad",
+]
+
+[[package]]
 name = "macroquad_macro"
 version = "0.1.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64b1d96218903768c1ce078b657c0d5965465c95a60d2682fd97443c9d2483dd"
+source = "git+https://github.com/not-fl3/macroquad.git#f77e656c811d51140f27da778917cf368c881605"
 
 [[package]]
 name = "malloc_buf"
@@ -252,6 +258,7 @@ name = "quad-arcanoid"
 version = "0.1.0"
 dependencies = [
  "macroquad",
+ "macroquad-particles",
 ]
 
 [[package]]

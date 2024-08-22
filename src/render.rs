@@ -1,8 +1,57 @@
 use macroquad::prelude::*;
 
-use crate::physics::{self, Physics, BALL_RADIUS, BOX_LINE_COUNT, MAX_X, MAX_Y};
+use crate::physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH};
+use macroquad_particles::{self as particles, AtlasConfig, BlendMode, ColorCurve, EmitterConfig};
 
+fn trail() -> particles::EmitterConfig {
+    particles::EmitterConfig {
+        emitting: true,
+        lifetime: 1.2,
+        lifetime_randomness: 0.7,
+        explosiveness: 0.01,
+        amount: 15,
+        initial_direction_spread: 0.4 * std::f32::consts::PI,
+        initial_velocity: 100.0,
+        size: 1.0,
+        gravity: vec2(0.0, 1000.0),
+        atlas: Some(AtlasConfig::new(4, 4, 8..)),
+        blend_mode: BlendMode::Alpha,
+        emission_shape: macroquad_particles::EmissionShape::Sphere { radius: BALL_RADIUS },
+        colors_curve: ColorCurve {
+            start: Color::from_hex(0xDDFBFF),
+            mid: BLANK,
+            end: BLANK,
+        },
+        ..Default::default()
+    }
+}
 
+fn explosion() -> particles::EmitterConfig {
+    particles::EmitterConfig {
+        one_shot: true,
+        emitting: false,
+        lifetime: 0.3,
+        lifetime_randomness: 0.7,
+        explosiveness: 0.99,
+        amount: 30,
+        initial_direction_spread: 2.0 * std::f32::consts::PI,
+        initial_velocity: 200.0,
+        size: 1.5,
+        gravity: vec2(0.0, 1000.0),
+        atlas: Some(AtlasConfig::new(4, 4, 8..)),
+        blend_mode: BlendMode::Alpha,
+        emission_shape: macroquad_particles::EmissionShape::Rect {
+            width: BOX_WIDTH,
+            height: BOX_HEIGHT,
+        },
+        colors_curve: ColorCurve {
+            start: Color::from_hex(0x333354),
+            mid: Color::from_hex(0x333354),
+            end: BLACK,
+        },
+        ..Default::default()
+    }
+}
 
 pub struct Render {
     ball1: Texture2D,
@@ -13,6 +62,9 @@ pub struct Render {
     pla3: Texture2D,
     bricks: Texture2D,
     outline: Texture2D,
+    ball_emit: particles::Emitter,
+    brick_emit: particles::Emitter,
+    last_emit: Vec2,
 }
 
 impl Render {
@@ -34,10 +86,19 @@ impl Render {
             /* */
             bricks,
             outline,
+            ball_emit: particles::Emitter::new(EmitterConfig {
+                texture: None,
+                ..trail()
+            }),
+            brick_emit:  particles::Emitter::new(EmitterConfig {
+                texture: None,
+                ..explosion()
+            }),
+            last_emit: Vec2::ZERO,
         }
     }
 
-    pub fn draw(&mut self, phys: &Physics, t: f32) {
+    pub fn draw(&mut self, phys: &Physics, t: f32, broken: &Vec<(usize, usize)>) {
         clear_background(Color {
             r: 0.0,
             g: 0.0,
@@ -58,7 +119,7 @@ impl Render {
 
         for by in 0..physics::BOX_LINE_COUNT {
             for bx in 0..physics::BOX_PER_LINE {
-                if !phys.boxes[Physics::box_id(bx, by)] {
+                if !phys.boxes[by][bx] {
                     continue;
                 }
 
@@ -138,6 +199,16 @@ impl Render {
         // );
 
 
+
+        if let Some((bx, by)) = broken.last() {
+            self.brick_emit.config.emitting = true;
+            self.last_emit = vec2(
+                BOX_WIDTH * (*bx as f32 + 0.5),
+                BOX_HEIGHT * (*by as f32 + 0.6),
+            );
+        }
+        self.brick_emit.draw(self.last_emit);
+
         let tex = [&self.ball1, &self.ball2, &self.ball3];
         let tex = tex[(t * 5.0) as usize % 3];
         draw_texture_ex(
@@ -157,6 +228,9 @@ impl Render {
                 pivot: None,
             },
         );
+        self.ball_emit.config.initial_direction = -phys.ball_dir;
+        self.ball_emit.config.gravity = phys.ball_dir;
+        self.ball_emit.draw(phys.ball_pos);
         // draw_circle(
         //     phys.ball_pos.x,
         //     phys.ball_pos.y,

@@ -24,6 +24,7 @@ fn window_conf() -> Conf {
 async fn main() {
     let mut phys = Physics::new();
     let mut render = Render::new().await;
+    let mut broken = Vec::with_capacity(3);
 
     let mut t = 0.0;
     loop {
@@ -37,12 +38,24 @@ async fn main() {
             phys.move_player(dt, true);
         }
 
+        broken.clear();
+
+        let old_blocks = phys.boxes;
         let hit_floor = phys.update(get_frame_time());
+        for by in 0..physics::BOX_LINE_COUNT {
+            for bx in 0..physics::BOX_PER_LINE {
+                if old_blocks[by][bx] == phys.boxes[by][bx] {
+                    continue;
+                }
+                broken.push((bx, by));
+            }
+        }
+
         if hit_floor {
             // break;
         }
 
-        render.draw(&phys, t);
+        render.draw(&phys, t, &broken);
 
         next_frame().await
     }
