@@ -31,7 +31,6 @@ fn window_conf() -> Conf {
 async fn main() {
     let mut phys = Physics::new();
     let mut render = Render::new().await;
-    let mut t = 0.0;
     let mut state = GameState::Start;
 
     let bsound = load_sound("assets/break.wav").await.unwrap();
@@ -40,7 +39,6 @@ async fn main() {
     loop {
         let mut broken = None;
         let dt = get_frame_time();
-        t += dt;
 
         match state {
             GameState::Start => {
@@ -89,7 +87,7 @@ async fn main() {
             },
         };
 
-        render.draw(state, &phys, t, broken.into_iter());
+        render.draw(state, &phys, broken.into_iter());
 
         next_frame().await
     }

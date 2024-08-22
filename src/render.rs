@@ -102,7 +102,6 @@ impl Render {
         &mut self,
         state: GameState,
         phys: &Physics,
-        t: f32,
         mut broken: impl Iterator<Item = (usize, usize)>,
     ) {
         clear_background(Color {
@@ -114,7 +113,7 @@ impl Render {
 
         self.setup_cam();
         self.draw_blocks(phys);
-        self.draw_player(phys, t);
+        self.draw_player(phys);
 
         if matches!(state, GameState::Start) {
             draw_text(
@@ -128,7 +127,7 @@ impl Render {
         }
 
         if matches!(state, GameState::Active) {
-            self.draw_ball(phys, t);
+            self.draw_ball(phys);
         }
 
         if let Some((bx, by)) = broken.next() {
@@ -165,7 +164,8 @@ impl Render {
         set_camera(&cam);
     }
 
-    fn draw_ball(&mut self, phys: &Physics, t: f32) {
+    fn draw_ball(&mut self, phys: &Physics) {
+        let t = get_time() as f32;
         let tex = [&self.ball1, &self.ball2, &self.ball3];
         let tex = tex[(t * 5.0) as usize % 3];
         draw_texture_ex(
@@ -190,7 +190,8 @@ impl Render {
         self.ball_emit.draw(phys.ball_pos);
     }
 
-    fn draw_player(&mut self, phys: &Physics, t: f32) {
+    fn draw_player(&mut self, phys: &Physics) {
+        let t = get_time() as f32;
         let rect = phys.player_rect();
 
         let tex = [&self.pla1, &self.pla2, &self.pla3];
