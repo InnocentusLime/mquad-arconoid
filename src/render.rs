@@ -116,6 +116,16 @@ impl Render {
         self.draw_player(phys);
 
         if matches!(state, GameState::Start) {
+            draw_rectangle(
+                -screen_width(), -screen_height(),
+                2.0*screen_width(), 2.0*screen_height(),
+                Color {
+                    r: 0.0,
+                    g: 0.0,
+                    b: 0.12,
+                    a: 0.5,
+                }
+            );
             draw_text(
                 "Press SPACE to start the game",
                 physics::MAX_X / 2.0 - 200.0,
@@ -123,7 +133,6 @@ impl Render {
                 32.0,
                 Color::from_hex(0xDDFBFF)
             );
-            return;
         }
 
         if matches!(state, GameState::Active) {
@@ -140,6 +149,16 @@ impl Render {
         self.brick_emit.draw(self.last_brick_break);
 
         if matches!(state, GameState::GameOver) {
+            draw_rectangle(
+                -screen_width(), -screen_height(),
+                2.0*screen_width(), 2.0*screen_height(),
+                Color {
+                    r: 0.0,
+                    g: 0.0,
+                    b: 0.12,
+                    a: 0.5,
+                }
+            );
             draw_text(
                 "Game Over. Press Space to restart",
                 physics::MAX_X / 2.0 - 220.0,
