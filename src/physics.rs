@@ -59,7 +59,7 @@ impl Physics {
         }
 
         if new_ball_pos.y + BALL_RADIUS > MAX_Y {
-            self.ball_dir.y *= -1.0;
+            // self.ball_dir.y *= -1.0;
             new_ball_pos.y = MAX_Y - BALL_RADIUS;
             return true;
         }
