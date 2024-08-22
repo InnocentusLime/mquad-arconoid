@@ -1,4 +1,4 @@
-use macroquad::prelude::*;
+use macroquad::{audio::{self, load_sound}, prelude::*};
 use physics::Physics;
 use render::Render;
 
@@ -34,6 +34,9 @@ async fn main() {
     let mut t = 0.0;
     let mut state = GameState::Start;
 
+    let bsound = load_sound("assets/break.wav").await.unwrap();
+    let bounce = load_sound("assets/ball.wav").await.unwrap();
+
     loop {
         let mut broken = None;
         let dt = get_frame_time();
@@ -53,15 +56,24 @@ async fn main() {
                     phys.move_player(dt, true);
                 }
 
+                let old_dir = phys.ball_dir;
                 let old_blocks = phys.boxes;
                 let hit_floor = phys.update(get_frame_time());
+                let mut block_break_played = false;
+
                 for by in 0..physics::BOX_LINE_COUNT {
                     for bx in 0..physics::BOX_PER_LINE {
                         if old_blocks[by][bx] == phys.boxes[by][bx] {
                             continue;
                         }
                         broken = Some((bx, by));
+                        block_break_played = true;
+                        audio::play_sound_once(&bsound);
                     }
+                }
+
+                if old_dir != phys.ball_dir && !block_break_played {
+                    audio::play_sound_once(&bounce);
                 }
 
                 if hit_floor {
