@@ -112,13 +112,20 @@ impl Render {
             a: 1.0,
         });
 
-        if matches!(state, GameState::Start) {
-            return;
-        }
-
         self.setup_cam();
         self.draw_blocks(phys);
         self.draw_player(phys, t);
+
+        if matches!(state, GameState::Start) {
+            draw_text(
+                "Press SPACE to start the game",
+                200.0,
+                200.0,
+                32.0,
+                Color::from_hex(0xDDFBFF)
+            );
+            return;
+        }
 
         if matches!(state, GameState::Active) {
             self.draw_ball(phys, t);
@@ -132,6 +139,17 @@ impl Render {
             );
         }
         self.brick_emit.draw(self.last_brick_break);
+
+        if matches!(state, GameState::GameOver) {
+            draw_text(
+                "Game Over. Press Space to restart",
+                200.0,
+                200.0,
+                32.0,
+                Color::from_hex(0xDDFBFF)
+            );
+        }
+
     }
 
     fn setup_cam(&mut self) {
