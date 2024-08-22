@@ -190,15 +190,6 @@ impl Render {
                 pivot: None,
             },
         );
-        // draw_rectangle(
-        //     rect.x,
-        //     rect.y,
-        //     rect.w,
-        //     rect.h,
-        //     YELLOW
-        // );
-
-
 
         if let Some((bx, by)) = broken.last() {
             self.brick_emit.config.emitting = true;
@@ -231,11 +222,5 @@ impl Render {
         self.ball_emit.config.initial_direction = -phys.ball_dir;
         self.ball_emit.config.gravity = phys.ball_dir;
         self.ball_emit.draw(phys.ball_pos);
-        // draw_circle(
-        //     phys.ball_pos.x,
-        //     phys.ball_pos.y,
-        //     physics::BALL_RADIUS,
-        //     YELLOW
-        // );
     }
 }
