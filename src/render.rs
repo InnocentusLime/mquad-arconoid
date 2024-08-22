@@ -118,7 +118,7 @@ impl Render {
         if matches!(state, GameState::Start) {
             draw_text(
                 "Press SPACE to start the game",
-                200.0,
+                physics::MAX_X / 2.0 - 200.0,
                 200.0,
                 32.0,
                 Color::from_hex(0xDDFBFF)
@@ -142,7 +142,7 @@ impl Render {
         if matches!(state, GameState::GameOver) {
             draw_text(
                 "Game Over. Press Space to restart",
-                200.0,
+                physics::MAX_X / 2.0 - 220.0,
                 200.0,
                 32.0,
                 Color::from_hex(0xDDFBFF)
