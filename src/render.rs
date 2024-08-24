@@ -209,6 +209,16 @@ impl Render {
             );
         }
 
+        if matches!(state, GameState::Win) {
+            draw_text(
+                "Congratulations! Press Space to restart",
+                physics::MAX_X / 2.0 - 220.0,
+                200.0,
+                32.0,
+                Color::from_hex(0xDDFBFF)
+            );
+        }
+
     }
 
     fn setup_cam(&mut self) {

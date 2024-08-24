@@ -10,6 +10,7 @@ enum GameState {
     Start,
     Active,
     GameOver,
+    Win,
 }
 
 fn window_conf() -> Conf {
@@ -111,6 +112,10 @@ async fn main() {
                         }
                     );
                 }
+
+                if phys.boxes.iter().flat_map(|x| x.iter()).all(|x| !*x) {
+                    state = GameState::Win;
+                }
             },
             GameState::GameOver => {
                 if is_key_pressed(KeyCode::Space) {
@@ -119,6 +124,13 @@ async fn main() {
                 }
 
             },
+            GameState::Win => {
+                if is_key_pressed(KeyCode::Space) {
+                    phys = Physics::new();
+                    state = GameState::Active;
+                }
+
+            }
         };
 
         render.draw(state, &phys, prev_state, broken.into_iter());
