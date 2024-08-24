@@ -1,4 +1,5 @@
 use macroquad::{audio::{self, load_sound, PlaySoundParams}, prelude::*};
+use miniquad::window::set_window_size;
 use physics::Physics;
 use render::Render;
 
@@ -38,6 +39,11 @@ async fn main() {
     let dead = load_sound("assets/dead.wav").await.unwrap();
     let bsound = load_sound("assets/break.wav").await.unwrap();
     let bounce = load_sound("assets/ball.wav").await.unwrap();
+    let mut fullscreen = window_conf().fullscreen;
+
+    // Save old size as leaving fullscreen will give window a different size
+    // This value is our best bet as macroquad doesn't allow us to get window size
+    let old_size = (window_conf().window_width, window_conf().window_height);
 
     loop {
         let mut broken = None;
@@ -52,6 +58,17 @@ async fn main() {
 
         phys.new_frame();
         let prev_state = state;
+
+        if is_key_pressed(KeyCode::F11) {
+            // NOTE: macroquad does not update window config when it goes fullscreen
+            set_fullscreen(!fullscreen);
+
+            if fullscreen {
+                set_window_size(old_size.0 as u32, old_size.1 as u32);
+            }
+
+            fullscreen = !fullscreen;
+        }
 
         match state {
             GameState::Start => {
