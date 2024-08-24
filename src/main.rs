@@ -1,4 +1,4 @@
-use macroquad::{audio::{self, load_sound}, prelude::*};
+use macroquad::{audio::{self, load_sound, set_sound_volume, PlaySoundParams}, prelude::*};
 use physics::Physics;
 use render::Render;
 
@@ -33,8 +33,9 @@ async fn main() {
     let mut render = Render::new().await;
     let mut state = GameState::Start;
 
-    let bsound = load_sound("assets/break.wav").await.unwrap();
-    let bounce = load_sound("assets/ball.wav").await.unwrap();
+    let dead = load_sound("assets/dead.wav").await.unwrap();
+    let bsound = load_sound("assets/break3.wav").await.unwrap();
+    let bounce = load_sound("assets/ball3.wav").await.unwrap();
 
     loop {
         let mut broken = None;
@@ -77,16 +78,35 @@ async fn main() {
                         }
                         broken = Some((bx, by));
                         block_break_played = true;
-                        audio::play_sound_once(&bsound);
+                        audio::play_sound(
+                            &bsound,
+                            PlaySoundParams {
+                                looped: false,
+                                volume: 0.4,
+                            }
+                        );
                     }
                 }
 
                 if old_dir != phys.ball_dir && !block_break_played {
-                    audio::play_sound_once(&bounce);
+                    audio::play_sound(
+                        &bounce,
+                        PlaySoundParams {
+                            looped: false,
+                            volume: 0.23,
+                        }
+                    );
                 }
 
                 if hit_floor {
-                    state = GameState::GameOver
+                    state = GameState::GameOver;
+                    audio::play_sound(
+                        &dead,
+                        PlaySoundParams {
+                            looped: false,
+                            volume: 0.4,
+                        }
+                    );
                 }
             },
             GameState::GameOver => {
