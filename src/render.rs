@@ -3,9 +3,9 @@ use macroquad::prelude::*;
 use crate::{physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH}, GameState};
 use macroquad_particles::{self as particles, BlendMode, ColorCurve, EmitterConfig};
 
-static WIN_TEXT: &'static str = "Congratulations! Press Space to restart";
-static START_TEXT: &'static str = "Press SPACE to start the game";
-static GAMEOVER_TEXT: &'static str = "Game Over. Press Space to restart";
+static WIN_TEXT: &'static str = "Congratulations!";
+static START_TEXT: &'static str = "SPACE to start";
+static GAMEOVER_TEXT: &'static str = "Game Over";
 const FONT_SIZE: u16 = 32;
 
 fn trail() -> particles::EmitterConfig {
@@ -83,6 +83,7 @@ fn ball_explosion() -> particles::EmitterConfig {
 }
 
 pub struct Render {
+    oegnek: Font,
     ball1: Texture2D,
     ball2: Texture2D,
     ball3: Texture2D,
@@ -102,7 +103,8 @@ impl Render {
     pub async fn new() -> Self {
         let sad = load_texture("assets/ded.png").await.unwrap();
 
-        let this = Self {
+        let mut this = Self {
+            oegnek: load_ttf_font("assets/oegnek.ttf").await.unwrap(),
             /* */
             ball1: load_texture("assets/ball1.png").await.unwrap(),
             ball2: load_texture("assets/ball2.png").await.unwrap(),
@@ -141,6 +143,7 @@ impl Render {
         this.pla3.set_filter(FilterMode::Nearest);
         this.bricks.set_filter(FilterMode::Nearest);
         this.outline.set_filter(FilterMode::Nearest);
+        this.oegnek.set_filter(FilterMode::Nearest);
 
         this
     }
@@ -175,14 +178,14 @@ impl Render {
         self.ball_exp.draw(phys.ball_pos);
 
         match state {
-            GameState::Start => Self::draw_announcement_text(true, START_TEXT),
-            GameState::GameOver => Self::draw_announcement_text(true, GAMEOVER_TEXT),
-            GameState::Win => Self::draw_announcement_text(false, WIN_TEXT),
+            GameState::Start => self.draw_announcement_text(true, START_TEXT),
+            GameState::GameOver => self.draw_announcement_text(true, GAMEOVER_TEXT),
+            GameState::Win => self.draw_announcement_text(false, WIN_TEXT),
             _ => (),
         }
     }
 
-    fn draw_announcement_text(backdrop: bool, text: &str) {
+    fn draw_announcement_text(&self, backdrop: bool, text: &str) {
         if backdrop {
             draw_rectangle(
                 -screen_width(), -screen_height(),
@@ -198,17 +201,21 @@ impl Render {
 
         let center = get_text_center(
             text,
-            None,
+            Some(&self.oegnek),
             FONT_SIZE,
             1.0,
             0.0
         );
-        draw_text(
+        draw_text_ex(
             text,
             physics::MAX_X / 2.0 - center.x,
             200.0 - center.y,
-            FONT_SIZE as f32,
-            Color::from_hex(0xDDFBFF)
+            TextParams {
+                font: Some(&self.oegnek),
+                font_size: FONT_SIZE,
+                color: Color::from_hex(0xDDFBFF),
+                ..Default::default()
+            }
         );
     }
 
