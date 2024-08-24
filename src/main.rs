@@ -40,6 +40,13 @@ async fn main() {
         let mut broken = None;
         let dt = get_frame_time();
 
+        clear_background(Color {
+            r: 0.0,
+            g: 0.0,
+            b: 0.12,
+            a: 1.0,
+        });
+
         match state {
             GameState::Start => {
                 if is_key_pressed(KeyCode::Space) {

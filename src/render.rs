@@ -104,13 +104,6 @@ impl Render {
         phys: &Physics,
         mut broken: impl Iterator<Item = (usize, usize)>,
     ) {
-        clear_background(Color {
-            r: 0.0,
-            g: 0.0,
-            b: 0.12,
-            a: 1.0,
-        });
-
         self.setup_cam();
         self.draw_blocks(phys);
         self.draw_player(phys);
