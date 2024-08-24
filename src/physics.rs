@@ -24,10 +24,14 @@ pub struct Physics {
 
 impl Physics {
     pub fn new() -> Self {
+        let player_start = MAX_X / 2.0 - PLAYER_WIDTH / 2.0;
         Self {
-            player_x: 0.0,
+            player_x: player_start,
             player_delta: 0.0,
-            ball_pos: vec2(30.0, 180.0),
+            ball_pos: vec2(
+                player_start + PLAYER_WIDTH / 2.0,
+                MAX_Y - PLAYER_HEIGHT - BALL_RADIUS * 1.9 - BALL_RADIUS - PUSH_EPSILON
+            ),
             ball_dir: vec2(-1.0, -1.0).normalize(),
             boxes: [[true; BOX_PER_LINE]; BOX_LINE_COUNT],
         }
