@@ -36,8 +36,8 @@ async fn main() {
     let mut state = GameState::Start;
 
     let dead = load_sound("assets/dead.wav").await.unwrap();
-    let bsound = load_sound("assets/break3.wav").await.unwrap();
-    let bounce = load_sound("assets/ball3.wav").await.unwrap();
+    let bsound = load_sound("assets/break.wav").await.unwrap();
+    let bounce = load_sound("assets/ball.wav").await.unwrap();
 
     loop {
         let mut broken = None;
