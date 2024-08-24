@@ -14,6 +14,12 @@ I made it purely to:
 * F11 -- toggle fullscreen
 * Escape -- pause
 
+## Building it yourself
+
+1. Make sure you have the latest version of Rust and Cargo installed
+2. Enter the project directory
+3. Run `cargo build` there
+
 ## The Future
 
 I might revisit this project later. The main goals right now are:
