@@ -12,9 +12,11 @@ pub const MAX_X: f32 = BOX_WIDTH * (BOX_PER_LINE as f32);
 pub const MAX_Y: f32 = 410.0;
 pub const PLAYER_WIDTH: f32 = 80.0;
 pub const PLAYER_HEIGHT: f32 = 10.0;
+pub const BALL_NUDGE: f32 = 0.4;
 
 pub struct Physics {
     pub player_x: f32,
+    pub player_delta: f32,
     pub ball_pos: Vec2,
     pub ball_dir: Vec2,
     pub boxes: [[bool; BOX_PER_LINE]; BOX_LINE_COUNT],
@@ -24,6 +26,7 @@ impl Physics {
     pub fn new() -> Self {
         Self {
             player_x: 0.0,
+            player_delta: 0.0,
             ball_pos: vec2(30.0, 180.0),
             ball_dir: vec2(-1.0, -1.0).normalize(),
             boxes: [[true; BOX_PER_LINE]; BOX_LINE_COUNT],
@@ -35,6 +38,7 @@ impl Physics {
         if !right { dx *= -1.0; }
 
         self.player_x += dx;
+        self.player_delta = dx;
     }
 
     pub fn update(&mut self, dt: f32) -> bool {
@@ -100,6 +104,8 @@ impl Physics {
         // The player paddle is kind of special
         // 1. We pretend it is curved with the height function of -0.2 * 2.0 * x
         // 2. Player paddle always pushes the ball to the top of it
+        // 3. The horizontal component of ball's velocity can be affected if the paddle
+        //     was moving horizontally during impact
         if Self::ball_in_rect(self.ball_pos, player_rect) {
             /* df/dx */
             let d_height = |x: f32| {
@@ -123,10 +129,16 @@ impl Physics {
             self.ball_dir += push_n;
             self.ball_dir = self.ball_dir.normalize();
 
+            if self.player_delta != 0.0 {
+                self.ball_dir.x += BALL_NUDGE * (self.player_delta / self.player_delta);
+            }
+            self.ball_dir = self.ball_dir.normalize();
+
             new_ball_pos.y = player_rect.y - BALL_RADIUS - PUSH_EPSILON;
         }
 
         self.ball_pos = new_ball_pos;
+        self.player_delta = 0.0;
 
         false
     }
