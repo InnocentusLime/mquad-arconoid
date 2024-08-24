@@ -18,8 +18,8 @@ fn window_conf() -> Conf {
     Conf {
         window_title: "Boring Arcanoid".to_owned(),
         high_dpi: true,
-        window_width: 1920,
-        window_height: 1080,
+        window_width: 1600,
+        window_height: 900,
         fullscreen: false,
         platform: miniquad::conf::Platform {
             linux_backend: miniquad::conf::LinuxBackend::WaylandOnly,
