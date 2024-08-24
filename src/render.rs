@@ -6,6 +6,7 @@ use macroquad_particles::{self as particles, BlendMode, ColorCurve, EmitterConfi
 static WIN_TEXT: &'static str = "Congratulations!";
 static START_TEXT: &'static str = "SPACE to start";
 static GAMEOVER_TEXT: &'static str = "Game Over";
+static PAUSE_TEXT: &'static str = "Paused";
 const FONT_SIZE: u16 = 32;
 
 fn trail() -> particles::EmitterConfig {
@@ -159,7 +160,7 @@ impl Render {
         self.draw_blocks(phys);
         self.draw_player(phys);
 
-        if matches!(state, GameState::Active) {
+        if matches!(state, GameState::Active | GameState::Paused) {
             self.draw_ball(phys);
         }
 
@@ -181,6 +182,7 @@ impl Render {
             GameState::Start => self.draw_announcement_text(true, START_TEXT),
             GameState::GameOver => self.draw_announcement_text(true, GAMEOVER_TEXT),
             GameState::Win => self.draw_announcement_text(false, WIN_TEXT),
+            GameState::Paused => self.draw_announcement_text(true, PAUSE_TEXT),
             _ => (),
         }
     }

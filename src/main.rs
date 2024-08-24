@@ -11,6 +11,7 @@ enum GameState {
     Active,
     GameOver,
     Win,
+    Paused,
 }
 
 fn window_conf() -> Conf {
@@ -48,10 +49,6 @@ async fn main() {
             b: 0.12,
             a: 1.0,
         });
-
-        if is_key_pressed(KeyCode::Escape) {
-            break;
-        }
 
         phys.new_frame();
         let prev_state = state;
@@ -116,6 +113,10 @@ async fn main() {
                 if phys.boxes.iter().flat_map(|x| x.iter()).all(|x| !*x) {
                     state = GameState::Win;
                 }
+
+                if is_key_pressed(KeyCode::Escape) {
+                    state = GameState::Paused;
+                }
             },
             GameState::GameOver => {
                 if is_key_pressed(KeyCode::Space) {
@@ -130,7 +131,12 @@ async fn main() {
                     state = GameState::Active;
                 }
 
-            }
+            },
+            GameState::Paused => {
+                if is_key_pressed(KeyCode::Escape) {
+                    state = GameState::Active;
+                }
+            },
         };
 
         render.draw(state, &phys, prev_state, broken.into_iter());
