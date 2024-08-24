@@ -69,12 +69,7 @@ pub struct Render {
 
 impl Render {
     pub async fn new() -> Self {
-        let outline = load_texture("assets/brick_outline.png").await.unwrap();
-        let bricks = load_texture("assets/bricks.png").await.unwrap();
-        bricks.set_filter(FilterMode::Nearest);
-        outline.set_filter(FilterMode::Nearest);
-
-        Self {
+        let this = Self {
             /* */
             ball1: load_texture("assets/ball1.png").await.unwrap(),
             ball2: load_texture("assets/ball2.png").await.unwrap(),
@@ -84,8 +79,8 @@ impl Render {
             pla2: load_texture("assets/pl2.png").await.unwrap(),
             pla3: load_texture("assets/pl3.png").await.unwrap(),
             /* */
-            bricks,
-            outline,
+            bricks: load_texture("assets/bricks.png").await.unwrap(),
+            outline: load_texture("assets/brick_outline.png").await.unwrap(),
             ball_emit: particles::Emitter::new(EmitterConfig {
                 texture: None,
                 ..trail()
@@ -95,7 +90,18 @@ impl Render {
                 ..explosion()
             }),
             last_brick_break: Vec2::ZERO,
-        }
+        };
+
+        this.ball1.set_filter(FilterMode::Nearest);
+        this.ball2.set_filter(FilterMode::Nearest);
+        this.ball3.set_filter(FilterMode::Nearest);
+        this.pla1.set_filter(FilterMode::Nearest);
+        this.pla2.set_filter(FilterMode::Nearest);
+        this.pla3.set_filter(FilterMode::Nearest);
+        this.bricks.set_filter(FilterMode::Nearest);
+        this.outline.set_filter(FilterMode::Nearest);
+
+        this
     }
 
     pub fn draw(
