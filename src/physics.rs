@@ -97,8 +97,32 @@ impl Physics {
         }
 
         let player_rect = self.player_rect();
+        // The player paddle is kind of special
+        // 1. We pretend it is curved with the height function of -0.2 * 2.0 * x
+        // 2. Player paddle always pushes the ball to the top of it
         if Self::ball_in_rect(self.ball_pos, player_rect) {
-            self.ball_dir.y *= -1.0;
+            /* df/dx */
+            let d_height = |x: f32| {
+                -0.2 * 4.0 * x.powf(3.0)
+                // -0.2 * 2.0 * x
+            };
+            /* tant */
+            let tangent = |x: f32| {
+                vec2(1.0, d_height(x)).normalize()
+            };
+            let normal = |x: f32| {
+                let t = tangent(x);
+                vec2(-t.y, -t.x)
+            };
+            let ball_x_on_surface = (
+                (self.ball_pos.x - player_rect.left()) / player_rect.w
+            ) * 2.0 - 1.0;
+
+            let push_n = normal(ball_x_on_surface);
+            self.ball_dir -= push_n * self.ball_dir.dot(push_n);
+            self.ball_dir += push_n;
+            self.ball_dir = self.ball_dir.normalize();
+
             new_ball_pos.y = player_rect.y - BALL_RADIUS - PUSH_EPSILON;
         }
 
