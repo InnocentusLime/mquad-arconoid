@@ -47,6 +47,10 @@ async fn main() {
             a: 1.0,
         });
 
+        if is_key_pressed(KeyCode::Escape) {
+            break;
+        }
+
         match state {
             GameState::Start => {
                 if is_key_pressed(KeyCode::Space) {
