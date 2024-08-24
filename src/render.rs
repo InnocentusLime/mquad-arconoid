@@ -3,6 +3,11 @@ use macroquad::prelude::*;
 use crate::{physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH}, GameState};
 use macroquad_particles::{self as particles, BlendMode, ColorCurve, EmitterConfig};
 
+static WIN_TEXT: &'static str = "Congratulations! Press Space to restart";
+static START_TEXT: &'static str = "Press SPACE to start the game";
+static GAMEOVER_TEXT: &'static str = "Game Over. Press Space to restart";
+const FONT_SIZE: u16 = 32;
+
 fn trail() -> particles::EmitterConfig {
     particles::EmitterConfig {
         emitting: true,
@@ -162,11 +167,18 @@ impl Render {
                     a: 0.5,
                 }
             );
+            let center = get_text_center(
+                START_TEXT,
+                None,
+                FONT_SIZE,
+                1.0,
+                0.0
+            );
             draw_text(
-                "Press SPACE to start the game",
-                physics::MAX_X / 2.0 - 200.0,
-                200.0,
-                32.0,
+                START_TEXT,
+                physics::MAX_X / 2.0 - center.x,
+                200.0 - center.y,
+                FONT_SIZE as f32,
                 Color::from_hex(0xDDFBFF)
             );
         }
@@ -200,21 +212,35 @@ impl Render {
                     a: 0.5,
                 }
             );
+            let center = get_text_center(
+                GAMEOVER_TEXT,
+                None,
+                FONT_SIZE,
+                1.0,
+                0.0
+            );
             draw_text(
-                "Game Over. Press Space to restart",
-                physics::MAX_X / 2.0 - 220.0,
-                200.0,
-                32.0,
+                GAMEOVER_TEXT,
+                physics::MAX_X / 2.0 - center.x,
+                200.0 - center.y,
+                FONT_SIZE as f32,
                 Color::from_hex(0xDDFBFF)
             );
         }
 
         if matches!(state, GameState::Win) {
+            let center = get_text_center(
+                WIN_TEXT,
+                None,
+                FONT_SIZE,
+                1.0,
+                0.0
+            );
             draw_text(
-                "Congratulations! Press Space to restart",
-                physics::MAX_X / 2.0 - 220.0,
-                200.0,
-                32.0,
+                WIN_TEXT,
+                physics::MAX_X / 2.0 - center.x,
+                200.0 - center.y,
+                FONT_SIZE as f32,
                 Color::from_hex(0xDDFBFF)
             );
         }
