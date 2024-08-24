@@ -45,6 +45,10 @@ impl Physics {
         self.player_delta = dx;
     }
 
+    pub fn new_frame(&mut self) {
+        self.player_delta = 0.0;
+    }
+
     pub fn update(&mut self, dt: f32) -> bool {
         let offset = self.ball_dir * BALL_SPEED * dt;
         let mut new_ball_pos = self.ball_pos + offset;
@@ -142,7 +146,6 @@ impl Physics {
         }
 
         self.ball_pos = new_ball_pos;
-        self.player_delta = 0.0;
 
         false
     }

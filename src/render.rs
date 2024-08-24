@@ -1,7 +1,7 @@
 use macroquad::prelude::*;
 
-use crate::{physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH}, GameState};
-use macroquad_particles::{self as particles, AtlasConfig, BlendMode, ColorCurve, EmitterConfig};
+use crate::{physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH}, GameState};
+use macroquad_particles::{self as particles, BlendMode, ColorCurve, EmitterConfig};
 
 fn trail() -> particles::EmitterConfig {
     particles::EmitterConfig {
@@ -14,7 +14,6 @@ fn trail() -> particles::EmitterConfig {
         initial_velocity: 100.0,
         size: 1.0,
         gravity: vec2(0.0, 1000.0),
-        atlas: Some(AtlasConfig::new(4, 4, 8..)),
         blend_mode: BlendMode::Alpha,
         emission_shape: macroquad_particles::EmissionShape::Sphere { radius: BALL_RADIUS },
         colors_curve: ColorCurve {
@@ -38,7 +37,6 @@ fn explosion() -> particles::EmitterConfig {
         initial_velocity: 200.0,
         size: 1.5,
         gravity: vec2(0.0, 1000.0),
-        atlas: Some(AtlasConfig::new(4, 4, 8..)),
         blend_mode: BlendMode::Alpha,
         emission_shape: macroquad_particles::EmissionShape::Rect {
             width: BOX_WIDTH,
@@ -48,6 +46,32 @@ fn explosion() -> particles::EmitterConfig {
             start: Color::from_hex(0x333354),
             mid: Color::from_hex(0x333354),
             end: BLACK,
+        },
+        ..Default::default()
+    }
+}
+
+fn ball_explosion() -> particles::EmitterConfig {
+    particles::EmitterConfig {
+        one_shot: true,
+        emitting: false,
+        lifetime: 1.0,
+        lifetime_randomness: 0.7,
+        explosiveness: 0.99,
+        amount: 10,
+        initial_direction_spread: 2.0 * std::f32::consts::PI,
+        initial_velocity: 100.0,
+        size: 20.0,
+        gravity: vec2(0.0, -1000.0),
+        blend_mode: BlendMode::Alpha,
+        emission_shape: macroquad_particles::EmissionShape::Sphere { radius: BALL_RADIUS * 4.0 },
+        initial_angular_velocity: 5.0,
+        angular_accel: 0.0,
+        angular_damping: 0.01,
+        colors_curve: ColorCurve {
+            start: Color::from_hex(0xDDFBFF),
+            mid: Color { r: 1.0, g: 0.0, b: 0.0, a: 0.0, },
+            end: BLANK,
         },
         ..Default::default()
     }
@@ -63,12 +87,16 @@ pub struct Render {
     bricks: Texture2D,
     outline: Texture2D,
     ball_emit: particles::Emitter,
+    pl_emit: particles::Emitter,
     brick_emit: particles::Emitter,
+    ball_exp: particles::Emitter,
     last_brick_break: Vec2,
 }
 
 impl Render {
     pub async fn new() -> Self {
+        let sad = load_texture("assets/ded.png").await.unwrap();
+
         let this = Self {
             /* */
             ball1: load_texture("assets/ball1.png").await.unwrap(),
@@ -85,9 +113,17 @@ impl Render {
                 texture: None,
                 ..trail()
             }),
+            pl_emit: particles::Emitter::new(EmitterConfig {
+                texture: None,
+                ..trail()
+            }),
             brick_emit:  particles::Emitter::new(EmitterConfig {
                 texture: None,
                 ..explosion()
+            }),
+            ball_exp:  particles::Emitter::new(EmitterConfig {
+                texture: Some(sad),
+                ..ball_explosion()
             }),
             last_brick_break: Vec2::ZERO,
         };
@@ -108,6 +144,7 @@ impl Render {
         &mut self,
         state: GameState,
         phys: &Physics,
+        prev_state: GameState,
         mut broken: impl Iterator<Item = (usize, usize)>,
     ) {
         self.setup_cam();
@@ -146,6 +183,11 @@ impl Render {
             );
         }
         self.brick_emit.draw(self.last_brick_break);
+
+        if prev_state == GameState::Active && state == GameState::GameOver {
+            self.ball_exp.config.emitting = true;
+        }
+        self.ball_exp.draw(phys.ball_pos);
 
         if matches!(state, GameState::GameOver) {
             draw_rectangle(
@@ -231,6 +273,18 @@ impl Render {
                 pivot: None,
             },
         );
+        if phys.player_delta == 0.0 {
+            self.pl_emit.config.emitting = false;
+        } else {
+            self.pl_emit.config.emitting = true;
+            self.pl_emit.config.initial_direction = -vec2(phys.player_delta, 0.0).normalize();
+            self.pl_emit.config.gravity = vec2(phys.player_delta, 0.0).normalize();
+        }
+
+        self.pl_emit.draw(vec2(
+            rect.x + PLAYER_WIDTH / 2.0,
+            rect.y + PLAYER_HEIGHT
+        ) - vec2(phys.player_delta, 0.0).normalize_or_zero() * PLAYER_WIDTH / 2.0);
     }
 
     fn draw_blocks(&mut self, phys: &Physics) {

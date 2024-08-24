@@ -1,11 +1,11 @@
-use macroquad::{audio::{self, load_sound, set_sound_volume, PlaySoundParams}, prelude::*};
+use macroquad::{audio::{self, load_sound, PlaySoundParams}, prelude::*};
 use physics::Physics;
 use render::Render;
 
 mod physics;
 mod render;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum GameState {
     Start,
     Active,
@@ -51,6 +51,9 @@ async fn main() {
         if is_key_pressed(KeyCode::Escape) {
             break;
         }
+
+        phys.new_frame();
+        let prev_state = state;
 
         match state {
             GameState::Start => {
@@ -118,7 +121,7 @@ async fn main() {
             },
         };
 
-        render.draw(state, &phys, broken.into_iter());
+        render.draw(state, &phys, prev_state, broken.into_iter());
 
         next_frame().await
     }
