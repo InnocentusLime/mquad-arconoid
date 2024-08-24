@@ -156,33 +156,6 @@ impl Render {
         self.draw_blocks(phys);
         self.draw_player(phys);
 
-        if matches!(state, GameState::Start) {
-            draw_rectangle(
-                -screen_width(), -screen_height(),
-                2.0*screen_width(), 2.0*screen_height(),
-                Color {
-                    r: 0.0,
-                    g: 0.0,
-                    b: 0.12,
-                    a: 0.5,
-                }
-            );
-            let center = get_text_center(
-                START_TEXT,
-                None,
-                FONT_SIZE,
-                1.0,
-                0.0
-            );
-            draw_text(
-                START_TEXT,
-                physics::MAX_X / 2.0 - center.x,
-                200.0 - center.y,
-                FONT_SIZE as f32,
-                Color::from_hex(0xDDFBFF)
-            );
-        }
-
         if matches!(state, GameState::Active) {
             self.draw_ball(phys);
         }
@@ -201,7 +174,16 @@ impl Render {
         }
         self.ball_exp.draw(phys.ball_pos);
 
-        if matches!(state, GameState::GameOver) {
+        match state {
+            GameState::Start => Self::draw_announcement_text(true, START_TEXT),
+            GameState::GameOver => Self::draw_announcement_text(true, GAMEOVER_TEXT),
+            GameState::Win => Self::draw_announcement_text(false, WIN_TEXT),
+            _ => (),
+        }
+    }
+
+    fn draw_announcement_text(backdrop: bool, text: &str) {
+        if backdrop {
             draw_rectangle(
                 -screen_width(), -screen_height(),
                 2.0*screen_width(), 2.0*screen_height(),
@@ -212,39 +194,22 @@ impl Render {
                     a: 0.5,
                 }
             );
-            let center = get_text_center(
-                GAMEOVER_TEXT,
-                None,
-                FONT_SIZE,
-                1.0,
-                0.0
-            );
-            draw_text(
-                GAMEOVER_TEXT,
-                physics::MAX_X / 2.0 - center.x,
-                200.0 - center.y,
-                FONT_SIZE as f32,
-                Color::from_hex(0xDDFBFF)
-            );
         }
 
-        if matches!(state, GameState::Win) {
-            let center = get_text_center(
-                WIN_TEXT,
-                None,
-                FONT_SIZE,
-                1.0,
-                0.0
-            );
-            draw_text(
-                WIN_TEXT,
-                physics::MAX_X / 2.0 - center.x,
-                200.0 - center.y,
-                FONT_SIZE as f32,
-                Color::from_hex(0xDDFBFF)
-            );
-        }
-
+        let center = get_text_center(
+            text,
+            None,
+            FONT_SIZE,
+            1.0,
+            0.0
+        );
+        draw_text(
+            text,
+            physics::MAX_X / 2.0 - center.x,
+            200.0 - center.y,
+            FONT_SIZE as f32,
+            Color::from_hex(0xDDFBFF)
+        );
     }
 
     fn setup_cam(&mut self) {
