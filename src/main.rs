@@ -60,10 +60,10 @@ async fn main() {
                 }
             },
             GameState::Active => {
-                if is_key_down(KeyCode::A) {
+                if is_key_down(KeyCode::A) || is_key_down(KeyCode::Left) {
                     phys.move_player(dt, false);
                 }
-                if is_key_down(KeyCode::D) {
+                if is_key_down(KeyCode::D) || is_key_down(KeyCode::Right) {
                     phys.move_player(dt, true);
                 }
 
