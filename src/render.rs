@@ -235,7 +235,8 @@ impl Render {
                 }
 
                 let box_rect = Physics::box_rect(bx, by);
-                let idx = ((53 + bx) * 53 + by) % 16;
+                let mut idx = ((53 + bx) * 53 + by) % 16;
+                idx = (idx + (get_time() / 1.0) as usize) % 16;
                 let tx = idx % 4;
                 let ty = idx / 4;
 
