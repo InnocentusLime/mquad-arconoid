@@ -31,7 +31,7 @@ jobs:
           key: deploy-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: deploy-${{ runner.os }}-cargo-
       - name: Build
-        run: cargo build --profile wasm-release
+        run: cargo build --target wasm32-unknown-unknown --profile wasm-release
       - name: Create dist dir
         run: mkdir dist
       - name: Acquire wasm build
