@@ -30,12 +30,16 @@ jobs:
             target/
           key: deploy-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: deploy-${{ runner.os }}-cargo-
-      - name: Install trunk and related tools
-        run: |
-          cargo install wasm-bindgen-cli --locked --version "0.2.92" || true
-          cargo install wasm-opt --locked --version "0.116.1" || true
       - name: Build
         run: cargo build --profile wasm-release
+      - name: Create dist dir
+        run: mkdir dist
+      - name: Acquire wasm build
+        run: cp ./target/wasm32-unkown-unkown/wasm-release/quad-arcanoid.wasm ./dist/game.wasm
+      - name: Copy assets
+        run: cp -rf ./assets ./dist/
+      - name: Copy static
+        run: cp ./static/* ./dist
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
