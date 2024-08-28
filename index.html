@@ -41,7 +41,7 @@
     </style>
 </head>
 <body>
-    <div id="loading">
+    <div id="loading" hidden="true">
         <h1>Loading!</h1>
         <p>Loading WASM, please wait :D</p>
         <svg id="loadspin" version=" 1.1" id="L3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
@@ -52,6 +52,9 @@
                     repeatCount="indefinite" />
             </circle>
         </svg>
+    </div>
+    <div id="start">
+        <button onclick="play_game">Start Game</button>
     </div>
     <canvas id="glcanvas" tabindex='1'></canvas>
     <!-- Minified and statically hosted version of https://github.com/not-fl3/macroquad/blob/master/js/mq_js_bundle.js -->
@@ -83,10 +86,15 @@
                 openFullscreen(cnv);
             }
         }
+        function play_game() {
+            device_fullscreen();
+            document.getElementById("#start").remove();
+            document.getElementById("#loading").hidden = false;
+            load("./game.wasm");
+        }
+
         importObject.env["done_loading"] = done_loading;
         importObject.env["on_mobile"] = on_mobile;
-        importObject.env["device_fullscreen"] = device_fullscreen;
-        load("./game.wasm");
     </script>
 </body>
 </html>
