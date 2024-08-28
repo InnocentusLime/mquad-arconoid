@@ -51,10 +51,6 @@ async fn main() {
 
     done_loading();
 
-    if on_mobile() {
-        device_fullscreen();
-    }
-
     loop {
         let mut move_left = false;
         let mut move_right = false;
