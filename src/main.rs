@@ -111,12 +111,14 @@ async fn main() {
                     is_key_down(KeyCode::A) ||
                     is_key_down(KeyCode::Left) ||
                     (move_left_button_rect.contains(vec2(mx, my)) &&
-                     is_mouse_button_down(MouseButton::Left));
+                     is_mouse_button_down(MouseButton::Left) &&
+                     on_mobile());
                 move_right =
                     is_key_down(KeyCode::D) ||
                     is_key_down(KeyCode::Right) ||
                     (move_right_button_rect.contains(vec2(mx, my)) &&
-                     is_mouse_button_down(MouseButton::Left));
+                     is_mouse_button_down(MouseButton::Left) &&
+                     on_mobile());
 
                 if move_left {
                     phys.move_player(dt, false);
@@ -208,22 +210,24 @@ async fn main() {
         set_default_camera();
         match state {
             GameState::Active => {
-                draw_rectangle(
-                    move_left_button_rect.x,
-                    move_left_button_rect.y,
-                    move_left_button_rect.w,
-                    move_left_button_rect.h,
-                    if move_left { WHITE }
-                    else { Color::from_hex(0xDDFBFF) }
-                );
-                draw_rectangle(
-                    move_right_button_rect.x,
-                    move_right_button_rect.y,
-                    move_right_button_rect.w,
-                    move_right_button_rect.h,
-                    if move_right { WHITE }
-                    else { Color::from_hex(0xDDFBFF) }
-                );
+                if on_mobile() {
+                    draw_rectangle(
+                        move_left_button_rect.x,
+                        move_left_button_rect.y,
+                        move_left_button_rect.w,
+                        move_left_button_rect.h,
+                        if move_left { WHITE }
+                        else { Color::from_hex(0xDDFBFF) }
+                    );
+                    draw_rectangle(
+                        move_right_button_rect.x,
+                        move_right_button_rect.y,
+                        move_right_button_rect.w,
+                        move_right_button_rect.h,
+                        if move_right { WHITE }
+                        else { Color::from_hex(0xDDFBFF) }
+                    );
+                }
             },
             _ => (),
         }
