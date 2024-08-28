@@ -38,10 +38,14 @@
             width: 100px;
             height: 100px;
         }
+        #start {
+            z-index: 2;
+            position: absolute;
+        }
     </style>
 </head>
 <body>
-    <div id="loading" hidden="true">
+    <div id="loading">
         <h1>Loading!</h1>
         <p>Loading WASM, please wait :D</p>
         <svg id="loadspin" version=" 1.1" id="L3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
