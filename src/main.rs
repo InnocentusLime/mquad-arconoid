@@ -52,8 +52,7 @@ async fn main() {
     done_loading();
 
     if on_mobile() {
-        fullscreen = true;
-        set_fullscreen(true);
+        device_fullscreen();
     }
 
     loop {
