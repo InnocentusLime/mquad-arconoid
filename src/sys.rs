@@ -8,11 +8,11 @@ mod platform {
     }
 
     pub fn done_loading() {
-        imports::done_loading()
+        unsafe { imports::done_loading() }
     }
 
     pub fn on_mobile() -> bool {
-        imports::on_mobile()
+        unsafe { imports::on_mobile() }
     }
 }
 
