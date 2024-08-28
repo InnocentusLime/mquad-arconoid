@@ -45,6 +45,7 @@
     </style>
 </head>
 <body>
+    <canvas id="glcanvas" tabindex='1'>
     <div id="loading">
         <h1>Loading!</h1>
         <p>Loading WASM, please wait :D</p>
@@ -60,7 +61,7 @@
     <div id="start">
         <button onclick="javascript:play_game()">Start Game</button>
     </div>
-    <canvas id="glcanvas" tabindex='1'></canvas>
+    </canvas>
     <!-- Minified and statically hosted version of https://github.com/not-fl3/macroquad/blob/master/js/mq_js_bundle.js -->
     <script src="./mq_js_bundle.js"></script>
     <script>
@@ -93,8 +94,8 @@
         function play_game() {
             console.log("Starting");
             device_fullscreen();
-            document.getElementById("#start").remove();
-            document.getElementById("#loading").hidden = false;
+            document.getElementById("start").remove();
+            document.getElementById("loading").hidden = false;
             load("./game.wasm");
         }
 
