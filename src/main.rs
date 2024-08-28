@@ -2,9 +2,11 @@ use macroquad::{audio::{self, load_sound, PlaySoundParams}, prelude::*};
 use miniquad::window::set_window_size;
 use physics::Physics;
 use render::Render;
+use sys::*;
 
 mod physics;
 mod render;
+mod sys;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum GameState {
@@ -30,10 +32,7 @@ fn window_conf() -> Conf {
     }
 }
 
-#[cfg(target_family = "wasm")]
-extern "C" {
-    pub fn done_loading();
-}
+const PADDLE_BUTTON_WIDTH: f32 = 128.0;
 
 #[macroquad::main(window_conf)]
 async fn main() {
@@ -50,10 +49,29 @@ async fn main() {
     // This value is our best bet as macroquad doesn't allow us to get window size
     let old_size = (window_conf().window_width, window_conf().window_height);
 
-    #[cfg(target_family = "wasm")]
-    unsafe { done_loading(); }
+    done_loading();
+
+    if on_mobile() {
+        fullscreen = true;
+        set_fullscreen(true);
+    }
 
     loop {
+        let mut move_left = false;
+        let mut move_right = false;
+        let move_left_button_rect = Rect {
+            x: 0.0,
+            y: 0.0,
+            w: PADDLE_BUTTON_WIDTH,
+            h: screen_height(),
+        };
+        let move_right_button_rect = Rect {
+            x: screen_width() - PADDLE_BUTTON_WIDTH,
+            y: 0.0,
+            w: PADDLE_BUTTON_WIDTH,
+            h: screen_height(),
+        };
+
         let mut broken = None;
         let dt = get_frame_time();
 
@@ -80,15 +98,30 @@ async fn main() {
 
         match state {
             GameState::Start => {
-                if is_key_pressed(KeyCode::Space) {
+                let interaction_detected =
+                    is_key_pressed(KeyCode::Space) ||
+                    is_mouse_button_pressed(MouseButton::Left);
+                if interaction_detected {
                     state = GameState::Active;
                 }
             },
             GameState::Active => {
-                if is_key_down(KeyCode::A) || is_key_down(KeyCode::Left) {
+                let (mx, my) = mouse_position();
+                move_left =
+                    is_key_down(KeyCode::A) ||
+                    is_key_down(KeyCode::Left) ||
+                    (move_left_button_rect.contains(vec2(mx, my)) &&
+                     is_mouse_button_down(MouseButton::Left));
+                move_right =
+                    is_key_down(KeyCode::D) ||
+                    is_key_down(KeyCode::Right) ||
+                    (move_right_button_rect.contains(vec2(mx, my)) &&
+                     is_mouse_button_down(MouseButton::Left));
+
+                if move_left {
                     phys.move_player(dt, false);
                 }
-                if is_key_down(KeyCode::D) || is_key_down(KeyCode::Right) {
+                if move_right {
                     phys.move_player(dt, true);
                 }
 
@@ -144,14 +177,20 @@ async fn main() {
                 }
             },
             GameState::GameOver => {
-                if is_key_pressed(KeyCode::Space) {
+                let interaction_detected =
+                    is_key_pressed(KeyCode::Space) ||
+                    is_mouse_button_pressed(MouseButton::Left);
+                if interaction_detected {
                     phys = Physics::new();
                     state = GameState::Active;
                 }
 
             },
             GameState::Win => {
-                if is_key_pressed(KeyCode::Space) {
+                let interaction_detected =
+                    is_key_pressed(KeyCode::Space) ||
+                    is_mouse_button_pressed(MouseButton::Left);
+                if interaction_detected {
                     phys = Physics::new();
                     state = GameState::Active;
                 }
@@ -165,6 +204,29 @@ async fn main() {
         };
 
         render.draw(state, &phys, prev_state, broken.into_iter());
+
+        set_default_camera();
+        match state {
+            GameState::Active => {
+                draw_rectangle(
+                    move_left_button_rect.x,
+                    move_left_button_rect.y,
+                    move_left_button_rect.w,
+                    move_left_button_rect.h,
+                    if move_left { WHITE }
+                    else { Color::from_hex(0xDDFBFF) }
+                );
+                draw_rectangle(
+                    move_right_button_rect.x,
+                    move_right_button_rect.y,
+                    move_right_button_rect.w,
+                    move_right_button_rect.h,
+                    if move_right { WHITE }
+                    else { Color::from_hex(0xDDFBFF) }
+                );
+            },
+            _ => (),
+        }
 
         next_frame().await
     }
