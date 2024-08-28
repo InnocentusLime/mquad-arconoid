@@ -25,6 +25,11 @@ pub struct Physics {
 impl Physics {
     pub fn new() -> Self {
         let player_start = MAX_X / 2.0 - PLAYER_WIDTH / 2.0;
+        let mut boxes = [[true; BOX_PER_LINE]; BOX_LINE_COUNT];
+        for x in 0..BOX_PER_LINE {
+            boxes[0][x] = false;
+        }
+
         Self {
             player_x: player_start,
             player_delta: 0.0,
@@ -33,7 +38,7 @@ impl Physics {
                 MAX_Y - PLAYER_HEIGHT - BALL_RADIUS * 1.9 - BALL_RADIUS - PUSH_EPSILON
             ),
             ball_dir: vec2(-1.0, -1.0).normalize(),
-            boxes: [[true; BOX_PER_LINE]; BOX_LINE_COUNT],
+            boxes,
         }
     }
 
