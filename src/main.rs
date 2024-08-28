@@ -30,6 +30,11 @@ fn window_conf() -> Conf {
     }
 }
 
+#[cfg(target_family = "wasm")]
+extern "C" {
+    pub fn done_loading();
+}
+
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut phys = Physics::new();
@@ -44,6 +49,9 @@ async fn main() {
     // Save old size as leaving fullscreen will give window a different size
     // This value is our best bet as macroquad doesn't allow us to get window size
     let old_size = (window_conf().window_width, window_conf().window_height);
+
+    #[cfg(target_family = "wasm")]
+    unsafe { done_loading(); }
 
     loop {
         let mut broken = None;

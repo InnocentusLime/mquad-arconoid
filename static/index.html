@@ -17,12 +17,54 @@
             background: black;
             z-index: 0;
         }
+        #loading * {
+            margin: 0;
+        }
+        #loading {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            position: absolute;
+            color: white;
+            background-color: transparent;
+            z-index: 1;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+        svg#loadspin {
+            width: 100px;
+            height: 100px;
+        }
     </style>
 </head>
 <body>
+    <div id="loading">
+        <h1>Loading!</h1>
+        <p>Loading WASM, please wait :D</p>
+        <svg id="loadspin" version=" 1.1" id="L3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+            y="0px" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+            <circle fill="none" stroke="rgb(204, 204, 204)" stroke-width="4" cx="50" cy="50" r="44" style="opacity:0.5;" />
+            <circle fill="rgb(40, 40, 40)" stroke="rgb(204, 204, 204)" stroke-width="3" cx="8" cy="54" r="6">
+                <animateTransform attributeName="transform" dur="2s" type="rotate" from="0 50 48" to="360 50 52"
+                    repeatCount="indefinite" />
+            </circle>
+        </svg>
+    </div>
     <canvas id="glcanvas" tabindex='1'></canvas>
     <!-- Minified and statically hosted version of https://github.com/not-fl3/macroquad/blob/master/js/mq_js_bundle.js -->
     <script src="./mq_js_bundle.js"></script>
-    <script>load("./game.wasm");</script>
+    <script>
+        function done_loading() {
+            let lod = document.getElementById("loading");
+            if (lod) {
+                lod.remove();
+            }
+        }
+        importObject.env["done_loading"] = done_loading;
+        load("./game.wasm");
+    </script>
 </body>
 </html>
