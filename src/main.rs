@@ -32,7 +32,7 @@ fn window_conf() -> Conf {
     }
 }
 
-const PADDLE_BUTTON_WIDTH: f32 = 128.0 * 3.0;
+const PADDLE_BUTTON_WIDTH: f32 = 128.0 * 1.5;
 
 #[macroquad::main(window_conf)]
 async fn main() {
