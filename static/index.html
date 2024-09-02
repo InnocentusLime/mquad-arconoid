@@ -74,6 +74,12 @@
             background-color: white;
             color: black;
         }
+
+        @media screen and (orientation:portrait) {
+            #glcanvas {
+                transform: rotateZ(90deg);
+            }
+        }
     </style>
 </head>
 <body>
@@ -129,7 +135,7 @@
         function play_game() {
             console.log("Starting");
             // if (on_mobile()) {
-                device_fullscreen();
+                // device_fullscreen();
             // }
             document.getElementById("start").remove();
             document.getElementById("loading").hidden = false;
