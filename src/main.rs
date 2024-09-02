@@ -3,10 +3,12 @@ use miniquad::window::set_window_size;
 use physics::Physics;
 use render::Render;
 use sys::*;
+use ui::Ui;
 
 mod physics;
 mod render;
 mod sys;
+mod ui;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum GameState {
@@ -32,13 +34,12 @@ fn window_conf() -> Conf {
     }
 }
 
-const PADDLE_BUTTON_WIDTH: f32 = 128.0 * 1.5;
-
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut phys = Physics::new();
     let mut render = Render::new().await;
     let mut state = GameState::Start;
+    let ui = Ui::new().await;
 
     let dead = load_sound("assets/dead.wav").await.unwrap();
     let bsound = load_sound("assets/break.wav").await.unwrap();
@@ -52,21 +53,6 @@ async fn main() {
     done_loading();
 
     loop {
-        let mut move_left = false;
-        let mut move_right = false;
-        let move_left_button_rect = Rect {
-            x: 0.0,
-            y: 0.0,
-            w: PADDLE_BUTTON_WIDTH,
-            h: screen_height(),
-        };
-        let move_right_button_rect = Rect {
-            x: screen_width() - PADDLE_BUTTON_WIDTH,
-            y: 0.0,
-            w: PADDLE_BUTTON_WIDTH,
-            h: screen_height(),
-        };
-
         let mut broken = None;
         let dt = get_frame_time();
 
@@ -77,10 +63,11 @@ async fn main() {
             a: 1.0,
         });
 
+        let ui_model = ui.update(state);
         phys.new_frame();
         let prev_state = state;
 
-        if is_key_pressed(KeyCode::F11) {
+        if ui_model.fullscreen_toggle_requested() {
             // NOTE: macroquad does not update window config when it goes fullscreen
             set_fullscreen(!fullscreen);
 
@@ -93,32 +80,15 @@ async fn main() {
 
         match state {
             GameState::Start => {
-                let interaction_detected =
-                    is_key_pressed(KeyCode::Space) ||
-                    is_mouse_button_pressed(MouseButton::Left);
-                if interaction_detected {
+                if ui_model.confirmation_detected() {
                     state = GameState::Active;
                 }
             },
             GameState::Active => {
-                let (mx, my) = mouse_position();
-                move_left =
-                    is_key_down(KeyCode::A) ||
-                    is_key_down(KeyCode::Left) ||
-                    (move_left_button_rect.contains(vec2(mx, my)) &&
-                     is_mouse_button_down(MouseButton::Left) &&
-                     on_mobile());
-                move_right =
-                    is_key_down(KeyCode::D) ||
-                    is_key_down(KeyCode::Right) ||
-                    (move_right_button_rect.contains(vec2(mx, my)) &&
-                     is_mouse_button_down(MouseButton::Left) &&
-                     on_mobile());
-
-                if move_left {
+                if ui_model.move_left() {
                     phys.move_player(dt, false);
                 }
-                if move_right {
+                if ui_model.move_right() {
                     phys.move_player(dt, true);
                 }
 
@@ -169,29 +139,21 @@ async fn main() {
                     state = GameState::Win;
                 }
 
-                if is_key_pressed(KeyCode::Escape) {
+                if ui_model.pause_requested() {
                     state = GameState::Paused;
                 }
             },
             GameState::GameOver => {
-                let interaction_detected =
-                    is_key_pressed(KeyCode::Space) ||
-                    is_mouse_button_pressed(MouseButton::Left);
-                if interaction_detected {
+                if ui_model.confirmation_detected() {
                     phys = Physics::new();
                     state = GameState::Active;
                 }
-
             },
             GameState::Win => {
-                let interaction_detected =
-                    is_key_pressed(KeyCode::Space) ||
-                    is_mouse_button_pressed(MouseButton::Left);
-                if interaction_detected {
+                if ui_model.confirmation_detected() {
                     phys = Physics::new();
                     state = GameState::Active;
                 }
-
             },
             GameState::Paused => {
                 if is_key_pressed(KeyCode::Escape) {
@@ -201,31 +163,7 @@ async fn main() {
         };
 
         render.draw(state, &phys, prev_state, broken.into_iter());
-
-        set_default_camera();
-        match state {
-            GameState::Active => {
-                if on_mobile() {
-                    draw_rectangle(
-                        move_left_button_rect.x,
-                        move_left_button_rect.y,
-                        move_left_button_rect.w,
-                        move_left_button_rect.h,
-                        if move_left { WHITE }
-                        else { Color::from_hex(0xDDFBFF) }
-                    );
-                    draw_rectangle(
-                        move_right_button_rect.x,
-                        move_right_button_rect.y,
-                        move_right_button_rect.w,
-                        move_right_button_rect.h,
-                        if move_right { WHITE }
-                        else { Color::from_hex(0xDDFBFF) }
-                    );
-                }
-            },
-            _ => (),
-        }
+        ui.draw(ui_model);
 
         next_frame().await
     }
