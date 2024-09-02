@@ -97,7 +97,7 @@ impl Render {
     pub async fn new() -> Self {
         let sad = load_texture("assets/ded.png").await.unwrap();
 
-        let this = Self {
+        Self {
             /* */
             ball1: load_texture("assets/ball1.png").await.unwrap(),
             ball2: load_texture("assets/ball2.png").await.unwrap(),
@@ -126,18 +126,7 @@ impl Render {
                 ..ball_explosion()
             }),
             last_brick_break: Vec2::ZERO,
-        };
-
-        this.ball1.set_filter(FilterMode::Nearest);
-        this.ball2.set_filter(FilterMode::Nearest);
-        this.ball3.set_filter(FilterMode::Nearest);
-        this.pla1.set_filter(FilterMode::Nearest);
-        this.pla2.set_filter(FilterMode::Nearest);
-        this.pla3.set_filter(FilterMode::Nearest);
-        this.bricks.set_filter(FilterMode::Nearest);
-        this.outline.set_filter(FilterMode::Nearest);
-
-        this
+        }
     }
 
     pub fn draw(&mut self, model: &GameModel) {

@@ -40,6 +40,8 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    set_default_filter_mode(FilterMode::Nearest);
+
     let mut phys = Physics::new();
     let mut render = Render::new().await;
     let mut sounder = SoundDirector::new().await;

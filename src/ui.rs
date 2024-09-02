@@ -48,13 +48,9 @@ pub struct Ui {
 
 impl Ui {
     pub async fn new() -> Self {
-        let mut this = Self {
+        Self {
             oegnek: load_ttf_font("assets/oegnek.ttf").await.unwrap(),
-        };
-
-        this.oegnek.set_filter(FilterMode::Nearest);
-
-        this
+        }
     }
 
     pub fn update(&self, state: GameState) -> InGameUiModel {
