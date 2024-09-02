@@ -14,6 +14,7 @@ pub const PLAYER_WIDTH: f32 = 80.0;
 pub const PLAYER_HEIGHT: f32 = 10.0;
 pub const BALL_NUDGE: f32 = 0.4;
 
+#[derive(Clone, Copy, Debug)]
 pub struct Physics {
     pub player_x: f32,
     pub player_delta: f32,

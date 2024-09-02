@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 
-use crate::{physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH}, GameState};
+use crate::{game_model::GameModel, physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH}, GameState};
 use macroquad_particles::{self as particles, BlendMode, ColorCurve, EmitterConfig};
 
 fn trail() -> particles::EmitterConfig {
@@ -140,34 +140,29 @@ impl Render {
         this
     }
 
-    pub fn draw(
-        &mut self,
-        state: GameState,
-        phys: &Physics,
-        prev_state: GameState,
-        mut broken: impl Iterator<Item = (usize, usize)>,
-    ) {
+    pub fn draw(&mut self, model: &GameModel) {
         self.setup_cam();
-        self.draw_blocks(phys);
-        self.draw_player(phys);
+        self.draw_blocks(&model.physics);
+        self.draw_player(&model.physics);
 
-        if matches!(state, GameState::Active | GameState::Paused) {
-            self.draw_ball(phys);
+        if matches!(model.state, GameState::Active | GameState::Paused) {
+            self.draw_ball(&model.physics);
         }
 
-        if let Some((bx, by)) = broken.next() {
+        if let Some((bx, by)) = model.broken_box() {
             self.brick_emit.config.emitting = true;
             self.last_brick_break = vec2(
                 BOX_WIDTH * (bx as f32 + 0.5),
                 BOX_HEIGHT * (by as f32 + 0.6),
             );
         }
-        self.brick_emit.draw(self.last_brick_break);
 
-        if prev_state == GameState::Active && state == GameState::GameOver {
+        if model.gameover_just_happened(){
             self.ball_exp.config.emitting = true;
         }
-        self.ball_exp.draw(phys.ball_pos);
+
+        self.ball_exp.draw(model.physics.ball_pos);
+        self.brick_emit.draw(self.last_brick_break);
     }
 
     fn setup_cam(&mut self) {
