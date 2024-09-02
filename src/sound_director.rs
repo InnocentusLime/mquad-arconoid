@@ -9,12 +9,12 @@ pub struct SoundDirector {
 }
 
 impl SoundDirector {
-    pub async fn new() -> Self {
-        Self {
-            dead: load_sound("assets/dead.wav").await.unwrap(),
-            bsound: load_sound("assets/break.wav").await.unwrap(),
-            bounce: load_sound("assets/ball.wav").await.unwrap(),
-        }
+    pub async fn new() -> anyhow::Result<Self> {
+        Ok(Self {
+            dead: load_sound("assets/dead.wav").await?,
+            bsound: load_sound("assets/break.wav").await?,
+            bounce: load_sound("assets/ball.wav").await?,
+        })
     }
 
     pub fn direct_sounds(&mut self, model: &GameModel) {

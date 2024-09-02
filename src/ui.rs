@@ -47,10 +47,10 @@ pub struct Ui {
 }
 
 impl Ui {
-    pub async fn new() -> Self {
-        Self {
-            oegnek: load_ttf_font("assets/oegnek.ttf").await.unwrap(),
-        }
+    pub async fn new() -> anyhow::Result<Self> {
+        Ok(Self {
+            oegnek: load_ttf_font("assets/oegnek.ttf").await?,
+        })
     }
 
     pub fn update(&self, state: GameState) -> InGameUiModel {

@@ -40,12 +40,18 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    if let Err(e) = run().await {
+        report_fatal_error(e);
+    }
+}
+
+async fn run() -> anyhow::Result<()> {
     set_default_filter_mode(FilterMode::Nearest);
 
     let mut phys = Physics::new();
-    let mut render = Render::new().await;
-    let mut sounder = SoundDirector::new().await;
-    let ui = Ui::new().await;
+    let mut render = Render::new().await?;
+    let mut sounder = SoundDirector::new().await?;
+    let ui = Ui::new().await?;
 
     let mut state = GameState::Start;
     let mut fullscreen = window_conf().fullscreen;

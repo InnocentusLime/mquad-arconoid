@@ -94,21 +94,21 @@ pub struct Render {
 }
 
 impl Render {
-    pub async fn new() -> Self {
-        let sad = load_texture("assets/ded.png").await.unwrap();
+    pub async fn new() -> anyhow::Result<Self> {
+        let sad = load_texture("assets/ded.png").await?;
 
-        Self {
+        Ok(Self {
             /* */
-            ball1: load_texture("assets/ball1.png").await.unwrap(),
-            ball2: load_texture("assets/ball2.png").await.unwrap(),
-            ball3: load_texture("assets/ball3.png").await.unwrap(),
+            ball1: load_texture("assets/ball1.png").await?,
+            ball2: load_texture("assets/ball2.png").await?,
+            ball3: load_texture("assets/ball3.png").await?,
             /* */
-            pla1: load_texture("assets/pl1.png").await.unwrap(),
-            pla2: load_texture("assets/pl2.png").await.unwrap(),
-            pla3: load_texture("assets/pl3.png").await.unwrap(),
+            pla1: load_texture("assets/pl1.png").await?,
+            pla2: load_texture("assets/pl2.png").await?,
+            pla3: load_texture("assets/pl3.png").await?,
             /* */
-            bricks: load_texture("assets/bricks.png").await.unwrap(),
-            outline: load_texture("assets/brick_outline.png").await.unwrap(),
+            bricks: load_texture("assets/bricks.png").await?,
+            outline: load_texture("assets/brick_outline.png").await?,
             ball_emit: particles::Emitter::new(EmitterConfig {
                 texture: None,
                 ..trail()
@@ -126,7 +126,7 @@ impl Render {
                 ..ball_explosion()
             }),
             last_brick_break: Vec2::ZERO,
-        }
+        })
     }
 
     pub fn draw(&mut self, model: &GameModel) {
