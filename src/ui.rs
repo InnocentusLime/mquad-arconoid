@@ -232,7 +232,7 @@ impl Ui {
     }
 
     fn view_rect() -> Rect {
-        let view_height = (MAIN_FONT_SIZE as f32) * 20.0;
+        let view_height = (MAIN_FONT_SIZE as f32) * 12.0;
         Rect {
             x: 0.0,
             y: 0.0,
