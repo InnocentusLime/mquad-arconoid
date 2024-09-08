@@ -6,6 +6,8 @@ function register_plugin (importObject) {
         if (lod) {
             lod.remove();
         }
+        let cnv = document.getElementById("glcanvas");
+        cnv.focus();
     }
     importObject.env.app_is_on_mobile = function () {
         let check = false;
