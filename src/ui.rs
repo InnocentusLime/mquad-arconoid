@@ -15,6 +15,7 @@ static ORIENTATION_TEXT: &'static str = "Wrong Orientation";
 
 static RESTART_HINT_DESK: &'static str = "Press any key to restart";
 static RESTART_HINT_MOBILE: &'static str = "Tap the screen to restart";
+static ORIENTATION_HINT: &'static str = "Please re-orient your device\ninto landscape";
 
 #[derive(Clone, Copy, Debug)]
 pub struct InGameUiModel {
@@ -129,14 +130,18 @@ impl Ui {
             GameState::GameOver => self.draw_announcement_text(
                 true,
                 GAMEOVER_TEXT,
-                Some(Self::game_restart_hint())
+                Some(Self::game_restart_hint()),
             ),
-            GameState::Win => self.draw_announcement_text(false, WIN_TEXT, None),
+            GameState::Win => self.draw_announcement_text(
+                false,
+                WIN_TEXT,
+                Some(Self::game_restart_hint()),
+            ),
             GameState::Paused => self.draw_announcement_text(true, PAUSE_TEXT, None),
             GameState::PleaseRotate => self.draw_announcement_text(
                 true,
                 ORIENTATION_TEXT,
-                None
+                Some(ORIENTATION_HINT),
             ),
             _ => (),
         }
@@ -218,10 +223,11 @@ impl Ui {
             FONT_SCALE,
             0.0
         );
-        draw_text_ex(
+        draw_multiline_text_ex(
             hint,
             view_rect.left() + view_rect.w / 2.0 - center.x,
             view_rect.top() + view_rect.h / 2.0 - center.y + (MAIN_FONT_SIZE as f32) * 1.5,
+            None,
             TextParams {
                 font: Some(&self.oegnek),
                 font_size: HINT_FONT_SIZE,
