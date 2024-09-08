@@ -60,9 +60,9 @@ impl Ui {
 
     pub fn update(&self, state: GameState) -> InGameUiModel {
         let (mx, my) = mouse_position();
-        let Vec2 { x: mx, y: my } = Self::get_cam().screen_to_world(vec2(mx, my));
-        let left_button_rect = Self::move_left_button_rect();
-        let right_button_rect = Self::move_right_button_rect();
+        let Vec2 { x: mx, y: my } = self.get_cam().screen_to_world(vec2(mx, my));
+        let left_button_rect = self.move_left_button_rect();
+        let right_button_rect = self.move_right_button_rect();
 
 
         let left_movement_down =
@@ -96,11 +96,11 @@ impl Ui {
     }
 
     pub fn draw(&self, model: InGameUiModel) {
-        set_camera(&Self::get_cam());
+        set_camera(&self.get_cam());
 
         if on_mobile() && model.state == GameState::Active {
-            let left_button_rect = Self::move_left_button_rect();
-            let right_button_rect = Self::move_right_button_rect();
+            let left_button_rect = self.move_left_button_rect();
+            let right_button_rect = self.move_right_button_rect();
             draw_rectangle(
                 left_button_rect.x,
                 left_button_rect.y,
@@ -149,8 +149,8 @@ impl Ui {
         }
     }
 
-    fn move_left_button_rect() -> Rect {
-        let view_rect = Self::view_rect();
+    fn move_left_button_rect(&self) -> Rect {
+        let view_rect = self.view_rect();
 
         Rect {
             x: view_rect.left(),
@@ -160,8 +160,8 @@ impl Ui {
         }
     }
 
-    fn move_right_button_rect() -> Rect {
-        let view_rect = Self::view_rect();
+    fn move_right_button_rect(&self) -> Rect {
+        let view_rect = self.view_rect();
 
         Rect {
             x: view_rect.right() - PADDLE_BUTTON_WIDTH,
@@ -172,7 +172,7 @@ impl Ui {
     }
 
     fn draw_announcement_text(&self, backdrop: bool, text: &str, hint: Option<&str>) {
-        let view_rect = Self::view_rect();
+        let view_rect = self.view_rect();
 
         if backdrop {
             draw_rectangle(
@@ -231,7 +231,24 @@ impl Ui {
         );
     }
 
-    fn view_rect() -> Rect {
+    fn view_rect(&self) -> Rect {
+        // Special case for misoriented mobile devices
+        if screen_height() > screen_width() {
+            let measure = measure_text(
+                ORIENTATION_TEXT,
+                Some(&self.oegnek),
+                MAIN_FONT_SIZE,
+                FONT_SCALE
+            );
+
+            return Rect {
+                x: 0.0,
+                y: 0.0,
+                w: measure.width,
+                h: measure.width * (screen_height() / screen_width())
+            }
+        }
+
         let view_height = (MAIN_FONT_SIZE as f32) * 12.0;
         Rect {
             x: 0.0,
@@ -241,8 +258,8 @@ impl Ui {
         }
     }
 
-    fn get_cam() -> Camera2D {
-        let mut cam = Camera2D::from_display_rect(Self::view_rect());
+    fn get_cam(&self) -> Camera2D {
+        let mut cam = Camera2D::from_display_rect(self.view_rect());
         cam.zoom.y *= -1.0;
 
         cam
