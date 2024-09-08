@@ -9,6 +9,7 @@ static WIN_TEXT: &'static str = "Congratulations!";
 static START_TEXT: &'static str = "SPACE to start";
 static GAMEOVER_TEXT: &'static str = "Game Over";
 static PAUSE_TEXT: &'static str = "Paused";
+static ORIENTATION_TEXT: &'static str = "Please put your device into landscape orientation";
 
 #[derive(Clone, Copy, Debug)]
 pub struct InGameUiModel {
@@ -112,6 +113,7 @@ impl Ui {
             GameState::GameOver => self.draw_announcement_text(true, GAMEOVER_TEXT),
             GameState::Win => self.draw_announcement_text(false, WIN_TEXT),
             GameState::Paused => self.draw_announcement_text(true, PAUSE_TEXT),
+            GameState::PleaseRotate => self.draw_announcement_text(true, ORIENTATION_TEXT),
             _ => (),
         }
     }

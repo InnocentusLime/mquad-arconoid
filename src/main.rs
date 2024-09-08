@@ -21,6 +21,7 @@ enum GameState {
     GameOver,
     Win,
     Paused,
+    PleaseRotate,
 }
 
 fn window_conf() -> Conf {
@@ -55,6 +56,7 @@ async fn run() -> anyhow::Result<()> {
 
     let mut state = GameState::Start;
     let mut fullscreen = window_conf().fullscreen;
+    let mut paused_state = state;
 
     // Save old size as leaving fullscreen will give window a different size
     // This value is our best bet as macroquad doesn't allow us to get window size
@@ -124,7 +126,14 @@ async fn run() -> anyhow::Result<()> {
                     state = GameState::Paused;
                 }
             },
-            _ => ()
+            GameState::PleaseRotate if get_orientation() == 0.0 => {
+                state = paused_state;
+            },
+            _ if get_orientation() != 0.0 && state != GameState::PleaseRotate => {
+                paused_state = state;
+                state = GameState::PleaseRotate;
+            },
+            _ => (),
         };
 
         game_model.state = state;
