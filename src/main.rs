@@ -74,6 +74,12 @@ async fn run() -> anyhow::Result<()> {
             a: 1.0,
         });
 
+
+        if get_orientation() != 0.0 && state != GameState::PleaseRotate {
+            paused_state = state;
+            state = GameState::PleaseRotate;
+        }
+
         let ui_model = ui.update(state);
 
         if ui_model.fullscreen_toggle_requested() {
@@ -128,10 +134,6 @@ async fn run() -> anyhow::Result<()> {
             },
             GameState::PleaseRotate if get_orientation() == 0.0 => {
                 state = paused_state;
-            },
-            _ if get_orientation() != 0.0 && state != GameState::PleaseRotate => {
-                paused_state = state;
-                state = GameState::PleaseRotate;
             },
             _ => (),
         };
