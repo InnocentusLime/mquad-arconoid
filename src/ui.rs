@@ -9,7 +9,7 @@ static WIN_TEXT: &'static str = "Congratulations!";
 static START_TEXT: &'static str = "SPACE to start";
 static GAMEOVER_TEXT: &'static str = "Game Over";
 static PAUSE_TEXT: &'static str = "Paused";
-static ORIENTATION_TEXT: &'static str = "Please put your device into landscape orientation";
+static ORIENTATION_TEXT: &'static str = "Wrong Orientation";
 
 #[derive(Clone, Copy, Debug)]
 pub struct InGameUiModel {
