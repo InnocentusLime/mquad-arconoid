@@ -217,7 +217,7 @@ impl Ui {
 
         let Some(hint) = hint else { return; };
         let center = get_text_center(
-            hint,
+            Self::find_longest_line(hint),
             Some(&self.oegnek),
             HINT_FONT_SIZE,
             FONT_SCALE,
@@ -236,6 +236,11 @@ impl Ui {
                 ..Default::default()
             }
         );
+    }
+
+    fn find_longest_line(text: &str) -> &str {
+        text.split('\n').max_by_key(|x| x.len())
+            .unwrap_or("")
     }
 
     fn view_rect(&self) -> Rect {
