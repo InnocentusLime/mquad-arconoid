@@ -2,7 +2,8 @@ use macroquad::prelude::*;
 use crate::{sys::*, GameState};
 
 const FONT_SCALE: f32 = 1.0;
-const FONT_SIZE: u16 = 32;
+const MAIN_FONT_SIZE: u16 = 32;
+const HINT_FONT_SIZE: u16 = 16;
 const PADDLE_BUTTON_WIDTH: f32 = 128.0;
 
 static WIN_TEXT: &'static str = "Congratulations!";
@@ -10,6 +11,9 @@ static START_TEXT: &'static str = "SPACE to start";
 static GAMEOVER_TEXT: &'static str = "Game Over";
 static PAUSE_TEXT: &'static str = "Paused";
 static ORIENTATION_TEXT: &'static str = "Wrong Orientation";
+
+static RESTART_HINT_DESK: &'static str = "Press any key to restart";
+static RESTART_HINT_MOBILE: &'static str = "Tap the screen to restart";
 
 #[derive(Clone, Copy, Debug)]
 pub struct InGameUiModel {
@@ -116,12 +120,32 @@ impl Ui {
         }
 
         match model.state {
-            GameState::Start => self.draw_announcement_text(true, START_TEXT),
-            GameState::GameOver => self.draw_announcement_text(true, GAMEOVER_TEXT),
-            GameState::Win => self.draw_announcement_text(false, WIN_TEXT),
-            GameState::Paused => self.draw_announcement_text(true, PAUSE_TEXT),
-            GameState::PleaseRotate => self.draw_announcement_text(true, ORIENTATION_TEXT),
+            GameState::Start => self.draw_announcement_text(
+                true,
+                START_TEXT,
+                None,
+            ),
+            GameState::GameOver => self.draw_announcement_text(
+                true,
+                GAMEOVER_TEXT,
+                Some(Self::game_restart_hint())
+            ),
+            GameState::Win => self.draw_announcement_text(false, WIN_TEXT, None),
+            GameState::Paused => self.draw_announcement_text(true, PAUSE_TEXT, None),
+            GameState::PleaseRotate => self.draw_announcement_text(
+                true,
+                ORIENTATION_TEXT,
+                None
+            ),
             _ => (),
+        }
+    }
+
+    fn game_restart_hint() -> &'static str {
+        if on_mobile() {
+            RESTART_HINT_MOBILE
+        } else {
+            RESTART_HINT_DESK
         }
     }
 
@@ -147,7 +171,7 @@ impl Ui {
         }
     }
 
-    fn draw_announcement_text(&self, backdrop: bool, text: &str) {
+    fn draw_announcement_text(&self, backdrop: bool, text: &str, hint: Option<&str>) {
         let view_rect = Self::view_rect();
 
         if backdrop {
@@ -168,7 +192,7 @@ impl Ui {
         let center = get_text_center(
             text,
             Some(&self.oegnek),
-            FONT_SIZE,
+            MAIN_FONT_SIZE,
             FONT_SCALE,
             0.0
         );
@@ -178,7 +202,28 @@ impl Ui {
             view_rect.top() + view_rect.h / 2.0 - center.y,
             TextParams {
                 font: Some(&self.oegnek),
-                font_size: FONT_SIZE,
+                font_size: MAIN_FONT_SIZE,
+                color: Color::from_hex(0xDDFBFF),
+                font_scale: FONT_SCALE,
+                ..Default::default()
+            }
+        );
+
+        let Some(hint) = hint else { return; };
+        let center = get_text_center(
+            hint,
+            Some(&self.oegnek),
+            HINT_FONT_SIZE,
+            FONT_SCALE,
+            0.0
+        );
+        draw_text_ex(
+            hint,
+            view_rect.left() + view_rect.w / 2.0 - center.x,
+            view_rect.top() + view_rect.h / 2.0 - center.y + (MAIN_FONT_SIZE as f32) * 1.5,
+            TextParams {
+                font: Some(&self.oegnek),
+                font_size: HINT_FONT_SIZE,
                 color: Color::from_hex(0xDDFBFF),
                 font_scale: FONT_SCALE,
                 ..Default::default()
@@ -187,7 +232,7 @@ impl Ui {
     }
 
     fn view_rect() -> Rect {
-        let view_height = (FONT_SIZE as f32) * 20.0;
+        let view_height = (MAIN_FONT_SIZE as f32) * 20.0;
         Rect {
             x: 0.0,
             y: 0.0,
