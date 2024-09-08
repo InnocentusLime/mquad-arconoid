@@ -4,7 +4,7 @@ use crate::{sys::*, GameState};
 const FONT_SCALE: f32 = 1.0;
 const MAIN_FONT_SIZE: u16 = 32;
 const HINT_FONT_SIZE: u16 = 16;
-const PADDLE_BUTTON_WIDTH: f32 = 128.0;
+const PADDLE_BUTTON_WIDTH: f32 = 36.0;
 const VERTICAL_ORIENT_HORIZONTAL_PADDING: f32 = 16.0;
 
 static WIN_TEXT: &'static str = "Congratulations!";
