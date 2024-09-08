@@ -80,6 +80,10 @@
                 transform: rotateZ(90deg);
             }
         }
+
+        #glcanvas {
+            position: absolute;
+        }
     </style>
 </head>
 <body>
@@ -132,18 +136,47 @@
                 screen.orientation.lock("landscape-primary");
             }
         }
+        function get_orientation() {
+            console.log("called");
+            switch (screen.orientation.type) {
+            case "landscape-primary":
+                return 0;
+            case "landscape-secondary":
+                return 180;
+            case "portrait-secondary":
+                return -90;
+            case "portrait-primary":
+                return 90;
+            default:
+                // console.log("The orientation API isn't supported in this browser :(");
+                return 0;
+            }
+        }
         function play_game() {
             console.log("Starting");
+
+            // semi-working hack with countless downsides
             // if (on_mobile()) {
-                // device_fullscreen();
+            //     let app = document.getElementById("app");
+            //     let wd = app.clientWidth;
+            //     let ht = app.clientHeight;
+
+            //     let cnv = document.getElementById("glcanvas");
+            //     cnv.style.width = ht + 'px';
+            //     cnv.style.height = wd + 'px';
+            //     cnv.style.left = (wd - ht) / 2.0 + 'px';
+            //     cnv.style.bottom = (ht - wd) / 2.0 + 'px';
             // }
+
             document.getElementById("start").remove();
             document.getElementById("loading").hidden = false;
+
             load("./game.wasm");
         }
 
         importObject.env["done_loading"] = done_loading;
         importObject.env["on_mobile"] = on_mobile;
+        importObject.env["get_orientation"] = get_orientation;
     </script>
 </body>
 </html>
