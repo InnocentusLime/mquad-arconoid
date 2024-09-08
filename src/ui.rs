@@ -55,28 +55,22 @@ impl Ui {
     }
 
     pub fn update(&self, state: GameState) -> InGameUiModel {
-        let view_height = (FONT_SIZE as f32) * 20.0;
-        let view_rect = Rect {
-            x: 0.0,
-            y: 0.0,
-            w: view_height * (screen_width() / screen_height()),
-            h: view_height,
-        };
-        let mut cam = Camera2D::from_display_rect(view_rect);
-        cam.zoom.y *= -1.0;
         let (mx, my) = mouse_position();
-        let Vec2 { x: mx, y: my } = cam.screen_to_world(vec2(mx, my));
+        let Vec2 { x: mx, y: my } = Self::get_cam().screen_to_world(vec2(mx, my));
+        let left_button_rect = Self::move_left_button_rect();
+        let right_button_rect = Self::move_right_button_rect();
+
 
         let left_movement_down =
             is_key_down(KeyCode::A) ||
             is_key_down(KeyCode::Left) ||
-            (Self::move_left_button_rect(view_rect).contains(vec2(mx, my)) &&
+            (left_button_rect.contains(vec2(mx, my)) &&
              is_mouse_button_down(MouseButton::Left) &&
              on_mobile());
         let right_movement_down =
             is_key_down(KeyCode::D) ||
             is_key_down(KeyCode::Right) ||
-            (Self::move_right_button_rect(view_rect).contains(vec2(mx, my)) &&
+            (right_button_rect.contains(vec2(mx, my)) &&
              is_mouse_button_down(MouseButton::Left) &&
              on_mobile());
         let confirmation_detected =
@@ -98,47 +92,42 @@ impl Ui {
     }
 
     pub fn draw(&self, model: InGameUiModel) {
-        let view_height = (FONT_SIZE as f32) * 20.0;
-        let view_rect = Rect {
-            x: 0.0,
-            y: 0.0,
-            w: view_height * (screen_width() / screen_height()),
-            h: view_height,
-        };
-        let mut cam = Camera2D::from_display_rect(view_rect);
-        cam.zoom.y *= -1.0;
-        set_camera(&cam);
+        set_camera(&Self::get_cam());
 
         if on_mobile() && model.state == GameState::Active {
+            let left_button_rect = Self::move_left_button_rect();
+            let right_button_rect = Self::move_right_button_rect();
             draw_rectangle(
-                Self::move_left_button_rect(view_rect).x,
-                Self::move_left_button_rect(view_rect).y,
-                Self::move_left_button_rect(view_rect).w,
-                Self::move_left_button_rect(view_rect).h,
+                left_button_rect.x,
+                left_button_rect.y,
+                left_button_rect.w,
+                left_button_rect.h,
                 if model.move_left() { WHITE }
                 else { Color::from_hex(0xDDFBFF) }
             );
             draw_rectangle(
-                Self::move_right_button_rect(view_rect).x,
-                Self::move_right_button_rect(view_rect).y,
-                Self::move_right_button_rect(view_rect).w,
-                Self::move_right_button_rect(view_rect).h,
+                right_button_rect.x,
+                right_button_rect.y,
+                right_button_rect.w,
+                right_button_rect.h,
                 if model.move_right() { WHITE }
                 else { Color::from_hex(0xDDFBFF) }
             );
         }
 
         match model.state {
-            GameState::Start => self.draw_announcement_text(true, START_TEXT, view_rect),
-            GameState::GameOver => self.draw_announcement_text(true, GAMEOVER_TEXT, view_rect),
-            GameState::Win => self.draw_announcement_text(false, WIN_TEXT, view_rect),
-            GameState::Paused => self.draw_announcement_text(true, PAUSE_TEXT, view_rect),
-            GameState::PleaseRotate => self.draw_announcement_text(true, ORIENTATION_TEXT, view_rect),
+            GameState::Start => self.draw_announcement_text(true, START_TEXT),
+            GameState::GameOver => self.draw_announcement_text(true, GAMEOVER_TEXT),
+            GameState::Win => self.draw_announcement_text(false, WIN_TEXT),
+            GameState::Paused => self.draw_announcement_text(true, PAUSE_TEXT),
+            GameState::PleaseRotate => self.draw_announcement_text(true, ORIENTATION_TEXT),
             _ => (),
         }
     }
 
-    fn move_left_button_rect(view_rect: Rect) -> Rect {
+    fn move_left_button_rect() -> Rect {
+        let view_rect = Self::view_rect();
+
         Rect {
             x: view_rect.left(),
             y: view_rect.top(),
@@ -147,7 +136,9 @@ impl Ui {
         }
     }
 
-    fn move_right_button_rect(view_rect: Rect) -> Rect {
+    fn move_right_button_rect() -> Rect {
+        let view_rect = Self::view_rect();
+
         Rect {
             x: view_rect.right() - PADDLE_BUTTON_WIDTH,
             y: view_rect.top(),
@@ -156,11 +147,15 @@ impl Ui {
         }
     }
 
-    fn draw_announcement_text(&self, backdrop: bool, text: &str, view_rect: Rect) {
+    fn draw_announcement_text(&self, backdrop: bool, text: &str) {
+        let view_rect = Self::view_rect();
+
         if backdrop {
             draw_rectangle(
-                -screen_width(), -screen_height(),
-                2.0*screen_width(), 2.0*screen_height(),
+                view_rect.x,
+                view_rect.y,
+                view_rect.w,
+                view_rect.h,
                 Color {
                     r: 0.0,
                     g: 0.0,
@@ -189,5 +184,22 @@ impl Ui {
                 ..Default::default()
             }
         );
+    }
+
+    fn view_rect() -> Rect {
+        let view_height = (FONT_SIZE as f32) * 20.0;
+        Rect {
+            x: 0.0,
+            y: 0.0,
+            w: view_height * (screen_width() / screen_height()),
+            h: view_height,
+        }
+    }
+
+    fn get_cam() -> Camera2D {
+        let mut cam = Camera2D::from_display_rect(Self::view_rect());
+        cam.zoom.y *= -1.0;
+
+        cam
     }
 }
