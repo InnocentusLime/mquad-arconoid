@@ -8,7 +8,6 @@ const PADDLE_BUTTON_WIDTH: f32 = 64.0;
 const VERTICAL_ORIENT_HORIZONTAL_PADDING: f32 = 16.0;
 
 static WIN_TEXT: &'static str = "Congratulations!";
-static START_TEXT: &'static str = "SPACE to start";
 static GAMEOVER_TEXT: &'static str = "Game Over";
 static PAUSE_TEXT: &'static str = "Paused";
 static ORIENTATION_TEXT: &'static str = "Wrong Orientation";
@@ -16,6 +15,9 @@ static ORIENTATION_TEXT: &'static str = "Wrong Orientation";
 static RESTART_HINT_DESK: &'static str = "Press any key to restart";
 static RESTART_HINT_MOBILE: &'static str = "Tap the screen to restart";
 static ORIENTATION_HINT: &'static str = "Please re-orient your device\ninto landscape";
+
+static START_TEXT_DESK: &'static str = "Press Space to start";
+static START_TEXT_MOBILE: &'static str = "Tap to start";
 
 #[derive(Clone, Copy, Debug)]
 pub struct InGameUiModel {
@@ -124,7 +126,7 @@ impl Ui {
         match model.state {
             GameState::Start => self.draw_announcement_text(
                 true,
-                START_TEXT,
+                Self::start_text(),
                 None,
             ),
             GameState::GameOver => self.draw_announcement_text(
@@ -144,6 +146,14 @@ impl Ui {
                 Some(ORIENTATION_HINT),
             ),
             _ => (),
+        }
+    }
+
+    fn start_text() -> &'static str {
+        if on_mobile() {
+            START_TEXT_MOBILE
+        } else {
+            START_TEXT_DESK
         }
     }
 
