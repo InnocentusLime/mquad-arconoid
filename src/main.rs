@@ -67,14 +67,6 @@ async fn run() -> anyhow::Result<()> {
     loop {
         let dt = get_frame_time();
 
-        clear_background(Color {
-            r: 0.0,
-            g: 0.0,
-            b: 0.12,
-            a: 1.0,
-        });
-
-
         if get_orientation() != 0.0 && state != GameState::PleaseRotate {
             paused_state = state;
             state = GameState::PleaseRotate;

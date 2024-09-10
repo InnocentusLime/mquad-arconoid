@@ -3,6 +3,9 @@ use macroquad::prelude::*;
 use crate::{game_model::GameModel, physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH}, GameState};
 use macroquad_particles::{self as particles, BlendMode, ColorCurve, EmitterConfig};
 
+const WALL_HOR_OFF: f32 = 4.0;
+const WALL_WIDTH: f32 = 16.0;
+
 fn trail() -> particles::EmitterConfig {
     particles::EmitterConfig {
         emitting: true,
@@ -86,6 +89,7 @@ pub struct Render {
     pla3: Texture2D,
     bricks: Texture2D,
     outline: Texture2D,
+    wall: Texture2D,
     ball_emit: particles::Emitter,
     pl_emit: particles::Emitter,
     brick_emit: particles::Emitter,
@@ -109,6 +113,9 @@ impl Render {
             /* */
             bricks: load_texture("assets/bricks.png").await?,
             outline: load_texture("assets/brick_outline.png").await?,
+            /* */
+            wall: load_texture("assets/wall.png").await?,
+            /* */
             ball_emit: particles::Emitter::new(EmitterConfig {
                 texture: None,
                 ..trail()
@@ -131,6 +138,47 @@ impl Render {
 
     pub fn draw(&mut self, model: &GameModel) {
         self.setup_cam();
+
+        clear_background(Color {
+            r: 0.0,
+            g: 0.0,
+            b: 0.02,
+            a: 1.0,
+        });
+
+        draw_rectangle(
+            -WALL_WIDTH + WALL_HOR_OFF,
+            0.0,
+            physics::MAX_X + (WALL_WIDTH - WALL_HOR_OFF) * 2.0,
+            physics::MAX_Y,
+            Color {
+                r: 0.0,
+                g: 0.0,
+                b: 0.12,
+                a: 1.0,
+            }
+        );
+        let wall_y = ((get_time() as f32).sin() * 3.0).floor();
+        draw_texture_ex(
+            &self.wall,
+            -WALL_WIDTH + WALL_HOR_OFF,
+            wall_y,
+            WHITE,
+            DrawTextureParams {
+                ..Default::default()
+            },
+        );
+        draw_texture_ex(
+            &self.wall,
+            physics::MAX_X - WALL_HOR_OFF,
+            wall_y,
+            WHITE,
+            DrawTextureParams {
+                flip_x: true,
+                ..Default::default()
+            },
+        );
+
         self.draw_blocks(&model.physics);
         self.draw_player(&model.physics);
 
