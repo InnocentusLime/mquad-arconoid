@@ -12,7 +12,7 @@ static GAMEOVER_TEXT: &'static str = "Game Over";
 static PAUSE_TEXT: &'static str = "Paused";
 static ORIENTATION_TEXT: &'static str = "Wrong Orientation";
 
-static RESTART_HINT_DESK: &'static str = "Press any key to restart";
+static RESTART_HINT_DESK: &'static str = "Press Space to restart";
 static RESTART_HINT_MOBILE: &'static str = "Tap the screen to restart";
 static ORIENTATION_HINT: &'static str = "Please re-orient your device\ninto landscape";
 
