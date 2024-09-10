@@ -1,7 +1,7 @@
 use macroquad::prelude::*;
 
 pub const PUSH_EPSILON: f32 = 0.001;
-pub const PLAYER_SPEED: f32 = 170.0;
+pub const PLAYER_SPEED: f32 = 256.0;
 pub const BALL_SPEED: f32 = 180.0;
 pub const BOX_PER_LINE: usize = 15;
 pub const BOX_LINE_COUNT: usize = 8;
