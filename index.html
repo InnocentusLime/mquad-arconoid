@@ -29,6 +29,14 @@
     <meta name=mobile-web-app-capable content="yes" />
     <meta name=apple-mobile-web-app-capable content="yes" />
 
+    <noscript>
+        <style>
+            .start-button {
+                display: none;
+            }
+        </style>
+    </noscript>
+
     <style>
         :root {
             --background-col: rgb(0.0, 0.0, 20);
@@ -112,6 +120,14 @@
             background-color: var(--primary-col);
             color: var(--background-col);
         }
+        noscript {
+            color: red;
+            font-family: mainFont;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
 
         #glcanvas {
             position: absolute;
@@ -133,6 +149,10 @@
         </svg>
     </div>
     <div id="start">
+        <noscript>
+            <h1>WARNING</h1>
+            This game needs javascript enabled to run.
+        </noscript>
         <button class="start-button" onclick="javascript:play_game()">Start Game</button>
     </div>
     <canvas id="glcanvas" tabindex='1'>
