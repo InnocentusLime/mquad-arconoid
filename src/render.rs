@@ -3,6 +3,8 @@ use macroquad::prelude::*;
 use crate::{game_model::GameModel, physics::{self, Physics, BALL_RADIUS, BOX_HEIGHT, BOX_LINE_COUNT, BOX_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH}, GameState};
 use macroquad_particles::{self as particles, BlendMode, ColorCurve, EmitterConfig};
 
+const WALL_WIGGLE_TIME: f32 = 0.15;
+const WALL_PUSH: f32 = 2.0;
 const WALL_HOR_OFF: f32 = 4.0;
 const WALL_WIDTH: f32 = 16.0;
 
@@ -95,6 +97,8 @@ pub struct Render {
     brick_emit: particles::Emitter,
     ball_exp: particles::Emitter,
     last_brick_break: Vec2,
+    l_wall_wiggle: f32,
+    r_wall_wiggle: f32,
 }
 
 impl Render {
@@ -115,6 +119,8 @@ impl Render {
             outline: load_texture("assets/brick_outline.png").await?,
             /* */
             wall: load_texture("assets/wall.png").await?,
+            l_wall_wiggle: 0.0,
+            r_wall_wiggle: 0.0,
             /* */
             ball_emit: particles::Emitter::new(EmitterConfig {
                 texture: None,
@@ -158,19 +164,41 @@ impl Render {
                 a: 1.0,
             }
         );
+
+        if model.ball_bounced_off_left_wall() {
+            self.l_wall_wiggle = WALL_WIGGLE_TIME;
+        }
+
+        if model.ball_bounced_off_right_wall() {
+            self.r_wall_wiggle = WALL_WIGGLE_TIME;
+        }
+
+        self.l_wall_wiggle = (self.l_wall_wiggle - get_frame_time()).clamp(0.0, WALL_WIGGLE_TIME);
+        self.r_wall_wiggle = (self.r_wall_wiggle - get_frame_time()).clamp(0.0, WALL_WIGGLE_TIME);
+
         let wall_y = ((get_time() as f32).sin() * 3.0).floor();
+        let l_wall_x = if self.l_wall_wiggle > 0.0 {
+            -WALL_WIDTH + WALL_HOR_OFF - WALL_PUSH
+        } else {
+            -WALL_WIDTH + WALL_HOR_OFF
+        };
         draw_texture_ex(
             &self.wall,
-            -WALL_WIDTH + WALL_HOR_OFF,
+            l_wall_x,
             wall_y,
             WHITE,
             DrawTextureParams {
                 ..Default::default()
             },
         );
+        let r_wall_x = if self.r_wall_wiggle > 0.0 {
+            physics::MAX_X - WALL_HOR_OFF + WALL_PUSH
+        } else {
+            physics::MAX_X - WALL_HOR_OFF
+        };
         draw_texture_ex(
             &self.wall,
-            physics::MAX_X - WALL_HOR_OFF,
+            r_wall_x,
             wall_y,
             WHITE,
             DrawTextureParams {

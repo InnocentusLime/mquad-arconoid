@@ -86,6 +86,7 @@ async fn run() -> anyhow::Result<()> {
         }
 
         let mut game_model = GameModel {
+            dt: get_frame_time(),
             prev_state: state,
             state,
             old_physics: phys,
