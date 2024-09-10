@@ -4,7 +4,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Boring Arcanoid</title>
+
+    <!-- OpenGraph -->
+    <meta property=og:title content="Boring Arcanoid" />
+    <meta property=og:description content="A simple plain Arcanoid clone that can run in your browser! Mobile included." />
+    <meta property=og:url content="https://innocentuslime.github.io/mquad-arconoid" />
+    <meta property=og:image content="/banner.png" />
+
+    <!-- Mobile -->
+    <meta name=HandheldFriendly content="True" />
+    <meta name=mobile-web-app-capable content="yes" />
+    <meta name=apple-mobile-web-app-capable content="yes" />
+
     <style>
+        :root {
+            --background-col: rgb(0.0, 0.0, 20);
+            --primary-col: #ddfbff;
+        }
+
+        @font-face {
+            font-family: mainFont;
+            src: url(assets/oegnek.ttf);
+        }
+
         html,
         body,
         canvas {
@@ -29,10 +51,10 @@
 			overflow: hidden;
 		}
         #loading {
-            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-family: mainFont;
             position: absolute;
-            color: white;
-            background-color: transparent;
+            color: var(--primary-col);
+            background-color: var(--background-col);
             z-index: 1;
             height: 100%;
             width: 100%;
@@ -56,6 +78,7 @@
             align-items: center;
             flex-direction: column;
             gap: 20px;
+            background-color: var(--background-col);
         }
 
         [hidden] { display: none !important; }
@@ -65,14 +88,16 @@
             padding:20px;
             font-weight: bold;
             border-radius: 20px;
+            font-size: larger;
             background-color: transparent;
-            color: white;
-            border: 1px solid white;
+            color: var(--primary-col);
+            border: 1px solid var(--primary-col);
             transition: all 0.3s ease-in-out;
+            font-family: mainFont;
         }
         .start-button:hover {
-            background-color: white;
-            color: black;
+            background-color: var(--primary-col);
+            color: var(--background-col);
         }
 
         #glcanvas {
@@ -84,11 +109,11 @@
 	<div id="app">
     <div id="loading" hidden="true">
         <h1>Loading!</h1>
-        <p>Loading WASM, please wait :D</p>
+        <p>Loading WASM, please wait!</p>
         <svg id="loadspin" version=" 1.1" id="L3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
             y="0px" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
-            <circle fill="none" stroke="rgb(204, 204, 204)" stroke-width="4" cx="50" cy="50" r="44" style="opacity:0.5;" />
-            <circle fill="rgb(40, 40, 40)" stroke="rgb(204, 204, 204)" stroke-width="3" cx="8" cy="54" r="6">
+            <circle fill="none" stroke="#30304F" stroke-width="4" cx="50" cy="50" r="44" style="opacity:0.5;" />
+            <circle fill="rgb(40, 40, 40)" stroke="#ddfbff" stroke-width="3" cx="8" cy="54" r="6">
                 <animateTransform attributeName="transform" dur="2s" type="rotate" from="0 50 48" to="360 50 52"
                     repeatCount="indefinite" />
             </circle>
