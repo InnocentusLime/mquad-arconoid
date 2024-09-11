@@ -20,12 +20,6 @@ I made it purely to:
 2. Enter the project directory
 3. Run `cargo build` there
 
-## The Future
-
-I might revisit this project later. The main goals right now are:
-1. Deploying it to the web
-2. Making it work on mobile
-
 ## Credits
 
 * All sounds have been generated with sfxr
