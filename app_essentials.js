@@ -35,5 +35,5 @@ miniquad_add_plugin({
     register_plugin,
     on_init,
     name: "mquad_arcanoid",
-    version: 65536
+    version: 1
 });
