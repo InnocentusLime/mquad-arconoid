@@ -27,6 +27,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "allocator-api2"
+version = "0.2.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5c6cb57a04249c6480766f7f7cef5467412af1490f8d1e243141daddada3264f"
+
+[[package]]
 name = "anyhow"
 version = "1.0.86"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -131,9 +137,9 @@ dependencies = [
 
 [[package]]
 name = "fontdue"
-version = "0.7.3"
+version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0793f5137567643cf65ea42043a538804ff0fbf288649e2141442b602d81f9bc"
+checksum = "efe23d02309319171d00d794c9ff48d4f903c0e481375b1b04b017470838af04"
 dependencies = [
  "hashbrown",
  "ttf-parser",
@@ -147,11 +153,12 @@ checksum = "9e05e7e6723e3455f4818c7b26e855439f7546cf617ef669d1adedb8669e5cb9"
 
 [[package]]
 name = "hashbrown"
-version = "0.13.2"
+version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43a3c133739dddd0d2990f9a4bdf8eb4b21ef50e4851ca85ab661199821d510e"
+checksum = "e5274423e17b7c9fc20b6e7e208532f9b19825d82dfd615708b70edd83df41f1"
 dependencies = [
  "ahash",
+ "allocator-api2",
 ]
 
 [[package]]
@@ -192,8 +199,8 @@ checksum = "d8adc4bb1803a324070e64a98ae98f38934d91957a99cfb3a43dcbc01bc56439"
 
 [[package]]
 name = "macroquad"
-version = "0.4.12"
-source = "git+https://github.com/not-fl3/macroquad.git#f77e656c811d51140f27da778917cf368c881605"
+version = "0.4.13"
+source = "git+https://github.com/not-fl3/macroquad.git?rev=6d535fd4fc601b66b4d363c4375fbae7d3d5f7c8#6d535fd4fc601b66b4d363c4375fbae7d3d5f7c8"
 dependencies = [
  "fontdue",
  "glam",
@@ -202,13 +209,12 @@ dependencies = [
  "miniquad",
  "quad-rand",
  "quad-snd",
- "slotmap",
 ]
 
 [[package]]
 name = "macroquad-particles"
 version = "0.2.1"
-source = "git+https://github.com/not-fl3/macroquad.git#f77e656c811d51140f27da778917cf368c881605"
+source = "git+https://github.com/not-fl3/macroquad.git?rev=6d535fd4fc601b66b4d363c4375fbae7d3d5f7c8#6d535fd4fc601b66b4d363c4375fbae7d3d5f7c8"
 dependencies = [
  "macroquad",
 ]
@@ -216,7 +222,7 @@ dependencies = [
 [[package]]
 name = "macroquad_macro"
 version = "0.1.8"
-source = "git+https://github.com/not-fl3/macroquad.git#f77e656c811d51140f27da778917cf368c881605"
+source = "git+https://github.com/not-fl3/macroquad.git?rev=6d535fd4fc601b66b4d363c4375fbae7d3d5f7c8#6d535fd4fc601b66b4d363c4375fbae7d3d5f7c8"
 
 [[package]]
 name = "malloc_buf"
@@ -235,9 +241,9 @@ checksum = "60302e4db3a61da70c0cb7991976248362f30319e88850c487b9b95bbf059e00"
 
 [[package]]
 name = "miniquad"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fc9c33a02870e728cf798dc0a69f29039f96ba13e46cde0f91d4b364eeb17a1"
+checksum = "2124e5e6bab86d96f263d78dc763c29e0da4c4f7ff0e1bb33f1d3905d1121262"
 dependencies = [
  "libc",
  "ndk-sys",
@@ -345,9 +351,9 @@ dependencies = [
 
 [[package]]
 name = "quad-rand"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "658fa1faf7a4cc5f057c9ee5ef560f717ad9d8dc66d975267f709624d6e1ab88"
+checksum = "b76f1009795ca44bb5aaae8fd3f18953e209259c33d9b059b1f53d58ab7511db"
 
 [[package]]
 name = "quad-snd"
@@ -378,15 +384,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d66dc143e6b11c1eddc06d5c423cfc97062865baf299914ab64caa38182078fe"
 
 [[package]]
-name = "slotmap"
-version = "1.0.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dbff4acf519f630b3a3ddcfaea6c06b42174d9a44bc70c620e9ed1649d58b82a"
-dependencies = [
- "version_check",
-]
-
-[[package]]
 name = "smallvec"
 version = "0.6.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -408,9 +405,9 @@ dependencies = [
 
 [[package]]
 name = "ttf-parser"
-version = "0.15.2"
+version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b3e06c9b9d80ed6b745c7159c40b311ad2916abb34a49e9be2653b90db0d8dd"
+checksum = "2c591d83f69777866b9126b24c6dd9a18351f177e49d625920d19f989fd31cf8"
 
 [[package]]
 name = "unicode-ident"
