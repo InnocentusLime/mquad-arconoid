@@ -1,12 +1,7 @@
-// uncommenting this caues a panic. we need to investigate
-// #[no_mangle]
-// pub extern "C" fn mquad_arcanoid_crate_version() -> u32 {
-//     let major = dbg!(env!("CARGO_PKG_VERSION_MAJOR").parse::<u32>().unwrap());
-//     let minor = env!("CARGO_PKG_VERSION_MINOR").parse::<u32>().unwrap();
-//     let patch = dbg!(env!("CARGO_PKG_VERSION_PATCH").parse::<u32>().unwrap());
-
-//     (major << 24) + (minor << 16) + patch
-// }
+#[no_mangle]
+pub extern "C" fn mquad_arcanoid_crate_version() -> u32 {
+    1
+}
 
 #[cfg(target_family = "wasm")]
 mod platform {
