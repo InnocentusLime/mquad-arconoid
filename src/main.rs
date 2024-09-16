@@ -68,7 +68,7 @@ async fn run() -> anyhow::Result<()> {
     // This value is our best bet as macroquad doesn't allow us to get window size
     let old_size = (window_conf().window_width, window_conf().window_height);
 
-    panic!("Oops");
+    // panic!("Oops");
     done_loading();
 
     loop {
