@@ -41,6 +41,12 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    let hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        sys::panic_screen(&format!("Driver panicked:\n{}", info));
+        hook(info);
+    }));
+
     if let Err(e) = run().await {
         report_fatal_error(e);
     }
@@ -62,6 +68,7 @@ async fn run() -> anyhow::Result<()> {
     // This value is our best bet as macroquad doesn't allow us to get window size
     let old_size = (window_conf().window_width, window_conf().window_height);
 
+    panic!("Oops");
     done_loading();
 
     loop {
