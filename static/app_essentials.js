@@ -11,6 +11,7 @@ function register_plugin (importObject) {
         panicked = true;
 
         let errMsg = get_js_object(errMsg_rs);
+        errMsg = errMsg.replace("\n", "<br />");
 
         let cnv = document.getElementById("glcanvas");
         if (cnv != null) {
