@@ -1,37 +1,47 @@
-function on_init () {}
-
 var panicked = false;
+
+function panic_screen_js(errMsg) {
+    if (panicked) {
+        return;
+    }
+
+    panicked = true;
+    errMsg = errMsg.replaceAll("\n", "<br />");
+
+    let cnv = document.getElementById("glcanvas");
+    if (cnv != null) {
+        cnv.remove();
+    }
+
+    let errElem = document.getElementById("err");
+    if (errElem == null) {
+        alert("ERROR ELEMENT NOT FOUND.\nactual error: " + errMsg);
+        return;
+    }
+
+    let errText = document.getElementById("error-msg");
+    if (errText == null) {
+        alert("ERROR TEXT ELEMENT NOT FOUND.\nactual error: " + errMsg);
+        return;
+    }
+
+    errText.innerHTML = errMsg;
+    errElem.hidden = false;
+}
+
+function on_init () {
+    window.addEventListener("error", function (err) {
+        let msg = "Error in driver support code\n";
+        msg += "at " + err.filename + ":" + err.lineno + ":" + err.colno + "\n";
+        msg += err.type + ": " + err.message
+        panic_screen_js(msg);
+    })
+}
 
 function register_plugin (importObject) {
     importObject.env.panic_screen = function(errMsg_rs) {
-        if (panicked) {
-            return;
-        }
-
-        panicked = true;
-
         let errMsg = get_js_object(errMsg_rs);
-        errMsg = errMsg.replace("\n", "<br />");
-
-        let cnv = document.getElementById("glcanvas");
-        if (cnv != null) {
-            cnv.remove();
-        }
-
-        let errElem = document.getElementById("err");
-        if (errElem == null) {
-            alert("ERROR ELEMENT NOT FOUND.\nactual error: " + errMsg);
-            return;
-        }
-
-        let errText = document.getElementById("error-msg");
-        if (errText == null) {
-            alert("ERROR TEXT ELEMENT NOT FOUND.\nactual error: " + errMsg);
-            return;
-        }
-
-        errText.innerHTML = errMsg;
-        errElem.hidden = false;
+        panic_screen_js(errMsg);
     }
     importObject.env.app_done_loading = function () {
         let lod = document.getElementById("loading");
