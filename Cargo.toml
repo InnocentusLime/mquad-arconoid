@@ -9,8 +9,8 @@ macroquad = { version = "0.4.13", features = ["audio"] }
 macroquad-particles = "0.2.1"
 
 [patch.crates-io]
-macroquad-particles = { git = "https://github.com/not-fl3/macroquad.git", rev = "6d535fd4fc601b66b4d363c4375fbae7d3d5f7c8" }
-macroquad = { git = "https://github.com/not-fl3/macroquad.git", rev = "6d535fd4fc601b66b4d363c4375fbae7d3d5f7c8" }
+macroquad-particles = { git = "https://github.com/not-fl3/macroquad.git", rev = "68e436d4ae954a4ecc18beeeb1a6d2a6f1ddb0d5" }
+macroquad = { git = "https://github.com/not-fl3/macroquad.git", rev = "68e436d4ae954a4ecc18beeeb1a6d2a6f1ddb0d5" }
 
 [profile.release]
 opt-level = 3
