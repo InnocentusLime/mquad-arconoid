@@ -1,6 +1,38 @@
 function on_init () {}
 
+var panicked = false;
+
 function register_plugin (importObject) {
+    importObject.env.panic_screen = function(errMsg_rs) {
+        if (panicked) {
+            return;
+        }
+
+        panicked = true;
+
+        let errMsg = get_js_object(errMsg_rs);
+        errMsg = errMsg.replace("\n", "<br />");
+
+        let cnv = document.getElementById("glcanvas");
+        if (cnv != null) {
+            cnv.remove();
+        }
+
+        let errElem = document.getElementById("err");
+        if (errElem == null) {
+            alert("ERROR ELEMENT NOT FOUND.\nactual error: " + errMsg);
+            return;
+        }
+
+        let errText = document.getElementById("error-msg");
+        if (errText == null) {
+            alert("ERROR TEXT ELEMENT NOT FOUND.\nactual error: " + errMsg);
+            return;
+        }
+
+        errText.innerHTML = errMsg;
+        errElem.hidden = false;
+    }
     importObject.env.app_done_loading = function () {
         let lod = document.getElementById("loading");
         if (lod) {

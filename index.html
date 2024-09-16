@@ -128,6 +128,16 @@
             align-items: center;
             flex-direction: column;
         }
+        #err {
+            z-index: 3;
+            position: absolute;
+            background-color: black;
+            height: 100%;
+            width: 100%;
+        }
+        #error-msg {
+            color: red;
+        }
 
         #glcanvas {
             position: absolute;
@@ -155,11 +165,16 @@
         </noscript>
         <button class="start-button" onclick="javascript:play_game()">Start Game</button>
     </div>
+    <div id="err" hidden="true">
+        <span id="error-msg">[NO ERROR]</span>
+    </div>
     <canvas id="glcanvas" tabindex='1'>
     </canvas>
     </div>
     <!-- Minified and statically hosted version of https://github.com/not-fl3/macroquad/blob/master/js/mq_js_bundle.js -->
-    <script src="./mq_js_bundle.js"></script>
+    <script src="./miniquad.js"></script>
+    <script src="./quad_snd.js"></script>
+    <script src="./sapp_jsutils.js"></script>
     <script src="./app_essentials.js"></script>
     <script>
         function play_game() {
