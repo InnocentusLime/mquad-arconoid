@@ -12,10 +12,9 @@ macroquad-particles = "0.2.1"
 version = "^0.1"
 
 [patch.crates-io]
-# macroquad-particles = { git = "https://github.com/not-fl3/macroquad.git", rev = "68e436d4ae954a4ecc18beeeb1a6d2a6f1ddb0d5" }
-# macroquad = { git = "https://github.com/not-fl3/macroquad.git", rev = "68e436d4ae954a4ecc18beeeb1a6d2a6f1ddb0d5" }
 macroquad-particles = { git = "https://github.com/InnocentusLime/macroquad.git", rev = "69248b43385ab4afe796040ed5a78718cc753097" }
 macroquad = { git = "https://github.com/InnocentusLime/macroquad.git", rev = "69248b43385ab4afe796040ed5a78718cc753097" }
+miniquad = { git = "https://github.com/not-fl3/miniquad.git", rev = "5d935920857be5520363e4e32e994dd1ec3a2cd9" }
 
 [profile.release]
 opt-level = 3
