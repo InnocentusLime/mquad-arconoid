@@ -31,10 +31,6 @@ fn window_conf() -> Conf {
         window_width: 1600,
         window_height: 900,
         fullscreen: false,
-        platform: miniquad::conf::Platform {
-            linux_backend: miniquad::conf::LinuxBackend::WaylandOnly,
-            ..Default::default()
-        },
         ..Default::default()
     }
 }
