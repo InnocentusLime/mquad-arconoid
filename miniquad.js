@@ -818,6 +818,9 @@ var importObject = {
         glGenFramebuffers: function (n, ids) {
             _glGenObject(n, ids, 'createFramebuffer', GL.framebuffers, 'glGenFramebuffers');
         },
+        glGenRenderbuffers: function (n, ids) {
+            _glGenObject(n, ids, 'createRenderbuffer', GL.renderbuffers, 'glGenRenderbuffers');
+        },
         glBindVertexArray: function (vao) {
             gl.bindVertexArray(GL.vaos[vao]);
         },
@@ -826,7 +829,11 @@ var importObject = {
 
             gl.bindFramebuffer(target, GL.framebuffers[framebuffer]);
         },
+        glBindRenderbuffer: function (target, renderbuffer) {
+            GL.validateGLObjectID(GL.renderbuffers, renderbuffer, 'glBindRenderbuffer', 'renderbuffer');
 
+            gl.bindRenderbuffer(target, GL.renderbuffers[renderbuffer]);
+        },
         glGenBuffers: function (n, buffers) {
             _glGenObject(n, buffers, 'createBuffer', GL.buffers, 'glGenBuffers');
         },
@@ -1128,6 +1135,26 @@ var importObject = {
         },
         glGenerateMipmap: function (index) {
             gl.generateMipmap(index);
+        },
+        glRenderbufferStorageMultisample: function(target, samples, internalformat, width, height) {
+            gl.renderbufferStorageMultisample(target, samples, internalformat, width, height);
+        },
+        glFramebufferRenderbuffer: function(target, attachment, renderbuffertarget, renderbuffer) {
+            GL.validateGLObjectID(GL.renderbuffers, renderbuffer, 'glFramebufferRenderbuffer', 'renderbuffer');
+            gl.framebufferRenderbuffer(target, attachment, renderbuffertarget, GL.renderbuffers[renderbuffer]);
+        },
+        glCheckFramebufferStatus: function(target) {
+            return gl.checkFramebufferStatus(target);
+        },
+        glReadBuffer: function(source) {
+            gl.readBuffer(source)
+        },
+        glBlitFramebuffer: function(srcX0, srcY0, srcX1, srcY1,
+                                    dstX0, dstY0, dstX1, dstY1,
+                                    mask, filter) {
+            gl.blitFramebuffer(srcX0, srcY0, srcX1, srcY1,
+                               dstX0, dstY0, dstX1, dstY1,
+                               mask, filter);
         },
 
         setup_canvas_size: function (high_dpi) {
@@ -1481,23 +1508,6 @@ function add_missing_functions_stabs(obj) {
     }
 }
 
-function report_error(err) {
-    let errElem = document.getElementById("err");
-    if (errElem == null) {
-        alert("ERROR ELEMENT NOT FOUND.\nactual error: " + err);
-        return;
-    }
-
-    let errText = document.getElementById("error-msg");
-    if (errText == null) {
-        alert("ERROR TEXT ELEMENT NOT FOUND.\nactual error: " + err);
-        return;
-    }
-
-    errText.innerHTML = err;
-    errElem.hidden = false;
-}
-
 function load(wasm_path) {
     var req = fetch(wasm_path);
 
@@ -1525,7 +1535,6 @@ function load(wasm_path) {
                 })
             .catch(err => {
                 console.error(err);
-                throw err;
             })
     } else {
         req
@@ -1551,7 +1560,6 @@ function load(wasm_path) {
             .catch(err => {
                 console.error("WASM failed to load, probably incompatible gl.js version");
                 console.error(err);
-                throw err;
             });
     }
 }
