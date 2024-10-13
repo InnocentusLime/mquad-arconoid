@@ -24,6 +24,14 @@ var high_dpi = false;
 // if false, requestAnimationFrame will be called at the end of each frame
 var blocking_event_loop = false;
 
+function check_webgl() {
+    if (gl === null) {
+        err = "Failed to initialize WebGL. Make sure your browser supports it and has it enabled";
+        panic_screen_js(err)
+        throw new Error(err);
+    }
+}
+
 function init_webgl(version) {
     if (version == 1) {
         gl = canvas.getContext("webgl");
@@ -71,6 +79,8 @@ function init_webgl(version) {
             }
         }
 
+        check_webgl();
+
         try {
             gl.getExtension("EXT_shader_texture_lod");
             gl.getExtension("OES_standard_derivatives");
@@ -89,6 +99,7 @@ function init_webgl(version) {
         }
     } else {
         gl = canvas.getContext("webgl2");
+        check_webgl();
     }
     if (gl === null) {
         alert("Unable to initialize WebGL. Your browser or machine may not support it.");
